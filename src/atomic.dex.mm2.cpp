@@ -20,6 +20,8 @@
 #include "atomic.dex.mm2.config.hpp"
 #include "atomic.threadpool.hpp"
 
+#include <loguru.cpp>
+
 //! Anonymous functions
 namespace
 {
@@ -1078,13 +1080,18 @@ namespace atomic_dex
         
         if (fs::exists(current_log_file))
         {
-            if (auto f_size = fs::file_size(current_log_file); f_size > 7777777)
+            if (auto f_size = fs::file_size(current_log_file); f_size > 777)
             {
-                if (fs::exists(current_log_file.string() + ".old"))
-                {
-                    fs::remove(current_log_file.string() + ".old");
-                }
                 boost::system::error_code ec;
+                fs::remove(current_log_file.string() + ".old", ec);
+
+                if (ec)
+                {
+                    LOG_F(WARNING, "remove old log file failed: {}", ec.message());
+                }
+                //loguru::file_close((void*)current_log_file.string().c_str());
+                //loguru::file_reopen(loguru::s_callbacks.front().user_data);
+
                 fs::rename(current_log_file, current_log_file.string() + ".old", ec);
                 if (ec)
                 {
