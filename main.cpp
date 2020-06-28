@@ -34,20 +34,23 @@ int
 main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 #endif
 {
+#if defined(WIN32) && defined(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2)
+    SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+#endif
     //! Project
 #if defined(_WIN32) || defined(WIN32)
-	using namespace std::string_literals;
-	auto install_db_tz_path = std::make_unique<fs::path>(ag::core::assets_real_path() / "tools" / "timezone" / "tzdata");
-	std::cout << install_db_tz_path->string() << std::endl;
-	date::set_install(install_db_tz_path->string());
-    //fs::path file_db_gz_path = fs::path(std::string(std::getenv("APPDATA"))) / "atomic_qt" / ("tzdata"s + "2020a"s + ".tar.gz"s);
-    //std::cout << file_db_gz_path.string() << std::endl;
+    using namespace std::string_literals;
+    auto install_db_tz_path = std::make_unique<fs::path>(ag::core::assets_real_path() / "tools" / "timezone" / "tzdata");
+    std::cout << install_db_tz_path->string() << std::endl;
+    date::set_install(install_db_tz_path->string());
+    // fs::path file_db_gz_path = fs::path(std::string(std::getenv("APPDATA"))) / "atomic_qt" / ("tzdata"s + "2020a"s + ".tar.gz"s);
+    // std::cout << file_db_gz_path.string() << std::endl;
     /*if (not fs::exists(file_db_gz_path))
     {
-			
+
             std::cout << "2020a" << std::endl;
             bool res_tz = date::remote_download("2020a");
-			std::cout << "Pass here" << std::endl;
+            std::cout << "Pass here" << std::endl;
             assert(res_tz == true);
             if (not fs::exists(install_db_tz_path / "version"))
             {
@@ -65,9 +68,9 @@ main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
                 fs::copy(xml_windows_tdata_path, install_db_tz_path / "windowsZones.xml");
             }
         //atomic_dex::spawn([&file_db_gz_path]() {
-		//
+        //
         //});
-        
+
     }*/
 #endif
 
