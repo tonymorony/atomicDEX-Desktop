@@ -49,12 +49,9 @@ namespace atomic_dex
         Q_PROPERTY(QList<QObject*> enableable_coins READ get_enableable_coins NOTIFY enableableCoinsChanged)
         Q_PROPERTY(QObject* current_coin_info READ get_current_coin_info NOTIFY coinInfoChanged)
         Q_PROPERTY(QString fiat READ get_current_fiat WRITE set_current_fiat NOTIFY on_fiat_changed)
-        // Q_PROPERTY(QString second_fiat READ get_second_current_fiat WRITE set_second_current_fiat NOTIFY on_second_fiat_changed)
         Q_PROPERTY(QString lang READ get_current_lang WRITE set_current_lang NOTIFY on_lang_changed)
         Q_PROPERTY(QString wallet_default_name READ get_wallet_default_name WRITE set_wallet_default_name NOTIFY on_wallet_default_name_changed)
         Q_PROPERTY(QString balance_fiat_all READ get_balance_fiat_all WRITE set_current_balance_fiat_all NOTIFY on_fiat_balance_all_changed)
-        Q_PROPERTY(QString second_balance_fiat_all READ get_second_balance_fiat_all WRITE set_second_current_balance_fiat_all NOTIFY
-                       on_second_fiat_balance_all_changed)
         Q_PROPERTY(QString initial_loading_status READ get_status WRITE set_status NOTIFY on_status_changed)
 
       private:
@@ -87,14 +84,13 @@ namespace atomic_dex
         coinpaprika_provider& get_paprika() noexcept;
         entt::dispatcher&     get_dispatcher() noexcept;
         QObject*              get_current_coin_info() const noexcept;
-        QObjectList           get_enabled_coins() const noexcept;
-        QObjectList           get_enableable_coins() const noexcept;
-        QString               get_current_fiat() const noexcept;
-        QString               get_current_lang() const noexcept;
-        QString               get_balance_fiat_all() const noexcept;
-        QString               get_second_balance_fiat_all() const noexcept;
-        QString               get_wallet_default_name() const noexcept;
-        QString               get_status() const noexcept;
+        const QObjectList&    get_enabled_coins() const noexcept;
+        const QObjectList&    get_enableable_coins() const noexcept;
+        const QString&        get_current_fiat() const noexcept;
+        const QString&        get_current_lang() const noexcept;
+        const QString&        get_balance_fiat_all() const noexcept;
+        const QString&        get_wallet_default_name() const noexcept;
+        const QString&        get_status() const noexcept;
         Q_INVOKABLE QString   get_version() const noexcept;
 
         //! Properties Setter
@@ -102,7 +98,6 @@ namespace atomic_dex
         void set_current_lang(const QString& current_lang) noexcept;
         void set_wallet_default_name(QString wallet_default_name) noexcept;
         void set_current_balance_fiat_all(QString current_fiat_all_balance) noexcept;
-        void set_second_current_balance_fiat_all(QString current_fiat_all_balance) noexcept;
         void set_status(QString status) noexcept;
         void set_qt_app(std::shared_ptr<QApplication> app) noexcept;
 
@@ -190,11 +185,9 @@ namespace atomic_dex
         void enableableCoinsChanged();
         void coinInfoChanged();
         void on_fiat_changed();
-        void on_second_fiat_changed();
         void on_lang_changed();
         void lang_changed();
         void on_fiat_balance_all_changed();
-        void on_second_fiat_balance_all_changed();
         void on_status_changed();
         void on_wallet_default_name_changed();
         void myOrdersUpdated();
@@ -211,21 +204,23 @@ namespace atomic_dex
         atomic_dex::qt_wallet_manager m_wallet_manager;
 
         //! Private members
-        std::atomic_bool m_refresh_enabled_coin_event{false};
-        std::atomic_bool m_refresh_current_ticker_infos{false};
-        std::atomic_bool m_refresh_orders_needed{false};
-        std::atomic_bool m_refresh_ohlc_needed{false};
-        std::atomic_bool m_refresh_transaction_only{false};
-        bool             m_need_a_full_refresh_of_mm2{false};
-        QObjectList      m_enabled_coins;
-        QObjectList      m_enableable_coins;
-        QTranslator      m_translator;
-        // QString            m_current_fiat{"USD"};
-        // QString            m_second_current_fiat{"BTC"};
+        std::atomic_bool   m_refresh_enabled_coin_event{false};
+        std::atomic_bool   m_refresh_current_ticker_infos{false};
+        std::atomic_bool   m_refresh_orders_needed{false};
+        std::atomic_bool   m_refresh_ohlc_needed{false};
+        std::atomic_bool   m_refresh_transaction_only{false};
+        bool               m_need_a_full_refresh_of_mm2{false};
+        QObjectList        m_enabled_coins;
+        QObjectList        m_enableable_coins;
+        QTranslator        m_translator;
+        QString            m_current_fiat{QString::fromStdString(m_config.current_fiat)};
         QString            m_current_lang{QString::fromStdString(m_config.current_lang)};
         QString            m_current_status{"None"};
         QString            m_current_balance_all{"0.00"};
         QString            m_second_current_balance_all{"0.00"};
         current_coin_info* m_coin_info;
+
+        //! Object reusable
+        QVariantList m_portfolio_informations;
     };
 } // namespace atomic_dex

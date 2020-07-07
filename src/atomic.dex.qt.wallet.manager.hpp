@@ -32,7 +32,7 @@ namespace atomic_dex
     class qt_wallet_manager
     {
       public:
-        QString get_wallet_default_name() const noexcept;
+        const QString& get_wallet_default_name() const noexcept;
 
         void set_wallet_default_name(QString wallet_name) noexcept;
 

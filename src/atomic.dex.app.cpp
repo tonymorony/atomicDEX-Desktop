@@ -103,13 +103,13 @@ namespace atomic_dex
 #endif
     }
 
-    QObjectList
+    const QObjectList&
     atomic_dex::application::get_enabled_coins() const noexcept
     {
         return m_enabled_coins;
     }
 
-    QObjectList
+    const QObjectList&
     atomic_dex::application::get_enableable_coins() const noexcept
     {
         return m_enableable_coins;
@@ -281,13 +281,6 @@ namespace atomic_dex
                 this->set_current_balance_fiat_all(QString::fromStdString(fiat_balance_std));
             }
 
-            // auto second_fiat_balance_std = paprika.get_price_in_fiat_all(m_second_current_fiat.toStdString(), ec);
-
-            // if (!ec)
-            //{
-            //    this->set_second_current_balance_fiat_all(QString::fromStdString(second_fiat_balance_std));
-            //}
-
             if (not m_coin_info->get_ticker().isEmpty() && not m_enabled_coins.empty())
             {
                 refresh_fiat_balance(mm2, paprika);
@@ -368,16 +361,10 @@ namespace atomic_dex
         return m_coin_info;
     }
 
-    QString
+    const QString&
     atomic_dex::application::get_balance_fiat_all() const noexcept
     {
         return m_current_balance_all;
-    }
-
-    QString
-    application::get_second_balance_fiat_all() const noexcept
-    {
-        return m_second_current_balance_all;
     }
 
     void
@@ -385,13 +372,6 @@ namespace atomic_dex
     {
         this->m_current_balance_all = std::move(current_fiat_all_balance);
         emit on_fiat_balance_all_changed();
-    }
-
-    void
-    application::set_second_current_balance_fiat_all(QString current_fiat_all_balance) noexcept
-    {
-        this->m_second_current_balance_all = std::move(current_fiat_all_balance);
-        emit on_second_fiat_balance_all_changed();
     }
 
     application::application(QObject* pParent) noexcept : QObject(pParent), m_coin_info(new current_coin_info(dispatcher_, this))
@@ -452,15 +432,16 @@ namespace atomic_dex
         m_refresh_enabled_coin_event = true;
     }
 
-    QString
+    const QString&
     application::get_current_fiat() const noexcept
     {
-        return QString::fromStdString(this->m_config.current_fiat);
+        return m_current_fiat;
     }
 
     void
     application::set_current_fiat(QString current_fiat) noexcept
     {
+        this->m_current_fiat = current_fiat;
         if (current_fiat.toStdString() != m_config.current_fiat)
         {
             spdlog::info("change lang {} to {}", m_config.current_fiat, current_fiat.toStdString());
@@ -660,7 +641,7 @@ namespace atomic_dex
         this->dispatcher_.trigger<gui_leave_trading>();
     }
 
-    QString
+    const QString&
     application::get_status() const noexcept
     {
         return m_current_status;
@@ -892,7 +873,7 @@ namespace atomic_dex
         return out;
     }
 
-    QString
+    const QString&
     application::get_current_lang() const noexcept
     {
         return m_current_lang;
@@ -1138,13 +1119,14 @@ namespace atomic_dex
     QString
     application::get_mm2_version() const
     {
-        return QString::fromStdString(::mm2::api::rpc_version());
+        auto res = QString::fromStdString(::mm2::api::rpc_version());
+        return res;
     }
 
     QString
     application::get_export_folder() const
     {
-        return QString::fromStdString(get_atomic_dex_export_folder().string().c_str());
+        return QString::fromStdString(get_atomic_dex_export_folder().string());
     }
 
     QString
@@ -1209,7 +1191,7 @@ namespace atomic_dex
 //! Wallet manager QML API
 namespace atomic_dex
 {
-    QString
+    const QString&
     application::get_wallet_default_name() const noexcept
     {
         return m_wallet_manager.get_wallet_default_name();

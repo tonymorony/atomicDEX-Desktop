@@ -18,7 +18,7 @@
 
 namespace atomic_dex
 {
-    QString
+    const QString&
     qt_wallet_manager::get_wallet_default_name() const noexcept
     {
         return m_current_default_wallet;
