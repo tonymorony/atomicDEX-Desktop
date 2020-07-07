@@ -109,17 +109,21 @@ namespace atomic_dex
         this->selected_coin_transactions = std::move(transactions);
         emit transactionsChanged();
     }
-    QString
+
+    const QString&
     current_coin_info::get_address() const noexcept
     {
         return selected_coin_address;
     }
 
     void
-    current_coin_info::set_address(QString address) noexcept
+    current_coin_info::set_address(const QString& address) noexcept
     {
-        this->selected_coin_address = std::move(address);
-        emit address_changed();
+        if (address != selected_coin_address)
+        {
+            this->selected_coin_address = address;
+            emit address_changed();
+        }
     }
 
     void
@@ -210,7 +214,7 @@ namespace atomic_dex
     QString
     atomic_dex::current_coin_info::get_paprika_id() const noexcept
     {
-       return this->selected_coin_paprika_id;
+        return this->selected_coin_paprika_id;
     }
 
     void
