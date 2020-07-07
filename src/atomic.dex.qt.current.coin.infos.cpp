@@ -37,29 +37,29 @@ namespace atomic_dex
         return this->selected_coin_fname;
     }
 
-    QString
+    const QString&
     atomic_dex::current_coin_info::get_balance() const noexcept
     {
         return selected_coin_balance;
     }
 
     void
-    atomic_dex::current_coin_info::set_balance(QString balance) noexcept
+    atomic_dex::current_coin_info::set_balance(const QString& balance) noexcept
     {
-        this->selected_coin_balance = std::move(balance);
+        this->selected_coin_balance = balance;
         emit balance_changed();
     }
 
-    QString
+    const QString&
     atomic_dex::current_coin_info::get_ticker() const noexcept
     {
         return selected_coin_name;
     }
 
     void
-    atomic_dex::current_coin_info::set_ticker(QString ticker) noexcept
+    atomic_dex::current_coin_info::set_ticker(const QString& ticker) noexcept
     {
-        selected_coin_name = std::move(ticker);
+        selected_coin_name = ticker;
         this->m_dispatcher.trigger<change_ticker_event>();
         emit ticker_changed();
     }
@@ -70,7 +70,7 @@ namespace atomic_dex
         return selected_coin_url;
     }
 
-    QString
+    const QString&
     current_coin_info::get_fiat_amount() const noexcept
     {
         return this->selected_coin_fiat_amount;
@@ -91,11 +91,12 @@ namespace atomic_dex
 
 
     void
-    current_coin_info::set_fiat_amount(QString fiat_amount) noexcept
+    current_coin_info::set_fiat_amount(const QString& fiat_amount) noexcept
     {
-        this->selected_coin_fiat_amount = std::move(fiat_amount);
+        this->selected_coin_fiat_amount = fiat_amount;
         emit fiat_amount_changed();
     }
+
     QObjectList
     current_coin_info::get_transactions() const noexcept
     {
