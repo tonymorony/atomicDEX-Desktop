@@ -461,7 +461,7 @@ namespace atomic_dex
     application::refresh_address(mm2& mm2)
     {
         std::error_code ec;
-        auto            address = QString::fromStdString(mm2.address(m_coin_info->get_ticker().toStdString(), ec));
+        QString         address = QString::fromStdString(mm2.address(m_coin_info->get_ticker().toStdString(), ec));
         this->m_coin_info->set_address(address);
     }
 
@@ -486,6 +486,7 @@ namespace atomic_dex
     {
         atomic_dex::t_withdraw_request req{
             .to = address.toStdString(), .coin = m_coin_info->get_ticker().toStdString(), .max = max, .amount = amount.toStdString()};
+        //! If req max is set to true, amount is ignored
         if (req.max == true)
         {
             req.amount = "0";
