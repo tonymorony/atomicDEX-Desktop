@@ -28,11 +28,12 @@
 
 namespace atomic_dex
 {
-    struct qt_my_order_contents : QObject
+    struct qt_my_order_contents final : QObject
     {
         Q_OBJECT
       public:
         explicit qt_my_order_contents(QObject* parent = nullptr);
+        ~qt_my_order_contents() final = default;
         QString m_order_id;
         QString m_date;
         QString m_base;
@@ -117,11 +118,12 @@ namespace atomic_dex
 
     using qt_my_order_contents_ptr = qt_my_order_contents*;
 
-    struct qt_my_orders : QObject
+    struct qt_my_orders final : QObject
     {
         Q_OBJECT
       public:
         explicit qt_my_orders(QObject* parent = nullptr);
+        ~qt_my_orders() final = default;
         QObjectList m_taker_orders;
         QObjectList m_maker_orders;
 
@@ -142,11 +144,12 @@ namespace atomic_dex
 
     using qt_my_orders_ptr = qt_my_orders*;
 
-    struct qt_ordercontent : QObject
+    struct qt_ordercontent final : QObject
     {
         Q_OBJECT
       public:
         explicit qt_ordercontent(QObject* parent = nullptr);
+        ~qt_ordercontent() final = default;
         QString m_price;
         QString m_maxvolume;
 
@@ -165,11 +168,12 @@ namespace atomic_dex
         }
     };
 
-    struct qt_orderbook : QObject
+    struct qt_orderbook final : QObject
     {
         Q_OBJECT
       public:
         explicit qt_orderbook(QObject* parent = nullptr);
+        ~qt_orderbook() final = default;
         QObjectList m_bids;
         QObjectList m_asks;
         QString     m_base;
@@ -204,11 +208,12 @@ namespace atomic_dex
         }
     };
 
-    struct qt_send_answer : QObject
+    struct qt_send_answer final : QObject
     {
         Q_OBJECT
       public:
         explicit qt_send_answer(QObject* parent = nullptr);
+        ~qt_send_answer() final = default;
         bool    m_has_error;
         QString m_error_message;
         QString m_tx_hex;
@@ -275,11 +280,12 @@ namespace atomic_dex
         }
     };
 
-    struct qt_transactions : QObject
+    struct qt_transactions final : QObject
     {
         Q_OBJECT
       public:
         explicit qt_transactions(QObject* parent = nullptr);
+        ~qt_transactions() final = default;
         bool         m_received;
         QString      m_amount;
         QString      m_amount_fiat;
@@ -370,11 +376,12 @@ namespace atomic_dex
         }
     };
 
-    struct qt_coin_config : QObject
+    struct qt_coin_config final : QObject
     {
         Q_OBJECT
       public:
         explicit qt_coin_config(QObject* parent = nullptr);
+        ~qt_coin_config() final = default;
         QString m_ticker;
         QString m_explorer_url;
         QString m_name;

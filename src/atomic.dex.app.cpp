@@ -215,7 +215,7 @@ namespace atomic_dex
 
             if (m_refresh_enabled_coin_event)
             {
-                auto refresh_coin = [this](auto&& coins_container, auto&& coins_list) {
+                auto refresh_coin = [](auto&& coins_container, auto&& coins_list) {
                     coins_list.clear();
                     coins_list = to_qt_binding(std::move(coins_container), nullptr);
                 };
