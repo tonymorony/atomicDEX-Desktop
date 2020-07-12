@@ -68,7 +68,7 @@ namespace atomic_dex
       public:
         //! Constructor
         explicit application(QObject* pParent = nullptr) noexcept;
-        ~application() noexcept;
+        ~application() noexcept final;
 
         //! entt::dispatcher events
         void on_enabled_coins_event(const enabled_coins_event&) noexcept;

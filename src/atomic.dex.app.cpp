@@ -217,7 +217,7 @@ namespace atomic_dex
             {
                 auto refresh_coin = [this](auto&& coins_container, auto&& coins_list) {
                     coins_list.clear();
-                    coins_list = to_qt_binding(std::move(coins_container), this);
+                    coins_list = to_qt_binding(std::move(coins_container), nullptr);
                 };
 
                 {
@@ -325,7 +325,7 @@ namespace atomic_dex
         if (!ec)
         {
             m_coin_info->set_transactions(
-                to_qt_binding(std::move(txs), this, get_paprika(), QString::fromStdString(m_config.current_currency), m_coin_info->get_ticker().toStdString()));
+                to_qt_binding(std::move(txs), nullptr, get_paprika(), QString::fromStdString(m_config.current_currency), m_coin_info->get_ticker().toStdString()));
         }
         auto tx_state = mm2.get_tx_state(m_coin_info->get_ticker().toStdString(), ec);
 
@@ -513,7 +513,7 @@ namespace atomic_dex
         std::error_code ec;
         auto            answer = mm2::withdraw(std::move(req), ec);
         auto            coin   = get_mm2().get_coin_info(m_coin_info->get_ticker().toStdString());
-        return to_qt_binding(std::move(answer), this, QString::fromStdString(coin.explorer_url[0]));
+        return to_qt_binding(std::move(answer), nullptr, QString::fromStdString(coin.explorer_url[0]));
     }
 
     QObject*
@@ -534,7 +534,7 @@ namespace atomic_dex
         std::error_code ec;
         auto            answer = mm2::withdraw(std::move(req), ec);
         auto            coin   = get_mm2().get_coin_info(m_coin_info->get_ticker().toStdString());
-        return to_qt_binding(std::move(answer), this, QString::fromStdString(coin.explorer_url[0]));
+        return to_qt_binding(std::move(answer), nullptr, QString::fromStdString(coin.explorer_url[0]));
     }
 
     bool
@@ -556,7 +556,7 @@ namespace atomic_dex
             }
         }
         auto coin = get_mm2().get_coin_info(m_coin_info->get_ticker().toStdString());
-        auto obj  = to_qt_binding(std::move(answer), this, QString::fromStdString(coin.explorer_url[0]));
+        auto obj  = to_qt_binding(std::move(answer), nullptr, QString::fromStdString(coin.explorer_url[0]));
         return obj;
     }
 
@@ -748,7 +748,7 @@ namespace atomic_dex
         for (auto&& coin: coins)
         {
             std::error_code ec;
-            output.insert(QString::fromStdString(coin.ticker), QVariant::fromValue(to_qt_binding(mm2.get_orders(coin.ticker, ec), this)));
+            output.insert(QString::fromStdString(coin.ticker), QVariant::fromValue(to_qt_binding(mm2.get_orders(coin.ticker, ec), nullptr)));
         }
         return output;
     }
@@ -784,7 +784,7 @@ namespace atomic_dex
     QObject*
     application::get_coin_info(const QString& ticker)
     {
-        return to_qt_binding(get_mm2().get_coin_info(ticker.toStdString()), this);
+        return to_qt_binding(get_mm2().get_coin_info(ticker.toStdString()), nullptr);
     }
 
     bool

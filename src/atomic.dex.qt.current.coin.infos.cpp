@@ -96,6 +96,7 @@ namespace atomic_dex
         this->selected_coin_fiat_amount = std::move(fiat_amount);
         emit fiat_amount_changed();
     }
+
     QObjectList
     current_coin_info::get_transactions() const noexcept
     {
