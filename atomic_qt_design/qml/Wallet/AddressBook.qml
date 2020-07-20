@@ -24,6 +24,7 @@ ColumnLayout {
         else {
             if(initialized) {
                 console.log("Cleaning up the empty items at address book...")
+                API.get().API.get().addressbook_mdl.cleanup()
                 global_edit_in_progress = false
             }
             // Open main wallet page
@@ -112,17 +113,12 @@ ColumnLayout {
                     if(!address_book.inCurrentPage) {
                         const addresses_list = modelData.readonly_addresses
 
-                        // No killing if any of the addresses is filled
+                        // Editing false if address is not empty and editing
                         for(const a of addresses_list)
                             if(a.address !== "") {
                                 if(contact.editing)
                                     contact.editing = false
-
-                                return
                             }
-
-                        // Kill if all addresses are empty
-                        contact.kill()
                     }
                 }
             }
@@ -281,8 +277,7 @@ ColumnLayout {
                                         }
 
                                         if(!address_book.inCurrentPage) {
-                                            if(address === "") address_line.kill()
-                                            else if(address_line.editing_address) {
+                                            if(address !== "" && address_line.editing_address) {
                                                 address_line.editing_address = false
                                             }
                                         }
