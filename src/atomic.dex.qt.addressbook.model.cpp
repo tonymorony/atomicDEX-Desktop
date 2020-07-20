@@ -172,17 +172,20 @@ namespace atomic_dex
         {
             QVariant       value       = this->data(index(cur_contact_idx, 0), SubModelRole);
             QObject*       obj         = qvariant_cast<QObject*>(value);
-            contact_model* cur_contact = qobject_cast<contact_model*>(obj);
-            for (int cur_idx = 0; cur_idx < cur_contact->rowCount(QModelIndex()); ++cur_idx)
+            if (obj != nullptr)
             {
-                if (cur_contact->data(index(cur_idx, 0), contact_model::ContactRoles::AddressRole).toString().isEmpty())
+                contact_model* cur_contact = qobject_cast<contact_model*>(obj);
+                for (int cur_idx = 0; cur_idx < cur_contact->rowCount(QModelIndex()); ++cur_idx)
                 {
-                    cur_contact->remove_at(cur_idx);
+                    if (cur_contact->data(index(cur_idx, 0), contact_model::ContactRoles::AddressRole).toString().isEmpty())
+                    {
+                        cur_contact->remove_at(cur_idx);
+                    }
                 }
-            }
-            if (cur_contact->get_addresses().isEmpty())
-            {
-                this->remove_at(cur_contact_idx);
+                if (cur_contact->get_addresses().isEmpty())
+                {
+                    this->remove_at(cur_contact_idx);
+                }
             }
         }
     }
