@@ -46,7 +46,7 @@ main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 #endif
 
 #if defined(_WIN32) || defined(WIN32) || defined(__linux__)
-    auto wally_res = wally_init(0);
+    [[maybe_unused]] auto wally_res = wally_init(0);
     assert(wally_res == WALLY_OK);
 #endif
 
@@ -120,7 +120,7 @@ main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 
     auto res = app->exec();
 #if defined(_WIN32) || defined(WIN32) || defined(__linux__)
-    auto wallet_exit_res = wally_cleanup(0);
+    [[maybe_unused]] auto wallet_exit_res = wally_cleanup(0);
     assert(wallet_exit_res == WALLY_OK);
 #endif
 

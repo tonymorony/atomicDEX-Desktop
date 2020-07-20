@@ -30,6 +30,8 @@ namespace atomic_dex
         //! Destructor
         ~addressbook_proxy_model() final;
 
+      public:
+        void reset_sort();
       protected:
         //! Override member functions
         [[nodiscard]] bool lessThan(const QModelIndex& source_left, const QModelIndex& source_right) const final;

@@ -44,7 +44,7 @@ namespace atomic_dex
         void set_name(const QString& name) noexcept;
 
       public:
-        explicit contact_model(atomic_dex::qt_wallet_manager& wallet_manager_, QObject* parent = nullptr) noexcept;
+        explicit contact_model(entt::dispatcher& dispatcher, atomic_dex::qt_wallet_manager& wallet_manager_, QObject* parent = nullptr) noexcept;
         ~contact_model() noexcept final;
         QVariant               data(const QModelIndex& index, int role) const final;
         int                    rowCount(const QModelIndex& parent) const final;
@@ -66,6 +66,7 @@ namespace atomic_dex
         QVector<atomic_dex::qt_contact_address_contents> m_addresses;
 
       private:
+        entt::dispatcher&              m_dispatcher;
         atomic_dex::qt_wallet_manager& m_wallet_manager;
     };
 } // namespace atomic_dex

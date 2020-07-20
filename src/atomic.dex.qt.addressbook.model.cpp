@@ -25,11 +25,12 @@
 //! Addressbook model
 namespace atomic_dex
 {
-    addressbook_model::addressbook_model(atomic_dex::qt_wallet_manager& wallet_manager_, QObject* parent) noexcept :
-        QAbstractListModel(parent), m_wallet_manager(wallet_manager_), m_addressbook_proxy(new addressbook_proxy_model(this))
+    addressbook_model::addressbook_model(entt::dispatcher& dispatcher, atomic_dex::qt_wallet_manager& wallet_manager_, QObject* parent) noexcept :
+        QAbstractListModel(parent), m_dispatcher(dispatcher), m_wallet_manager(wallet_manager_), m_addressbook_proxy(new addressbook_proxy_model(this))
     {
         spdlog::trace("{} l{} f[{}]", __FUNCTION__, __LINE__, fs::path(__FILE__).filename().string());
         spdlog::trace("addressbook model created");
+        this->m_dispatcher.sink<reset_addresbook_model>().connect<&addressbook_model::on_require_addressbook_reset>(*this);
         this->m_addressbook_proxy->setSourceModel(this);
         this->m_addressbook_proxy->setSortRole(SubModelRole);
         this->m_addressbook_proxy->setDynamicSortFilter(true);
@@ -71,7 +72,11 @@ namespace atomic_dex
         spdlog::trace("(addressbook_model::insertRows) inserting {} elements at position {}", rows, position);
         beginInsertRows(QModelIndex(), position, position + rows - 1);
 
-        for (int row = 0; row < rows; ++row) { this->m_addressbook.insert(position, new contact_model(this->m_wallet_manager, this)); }
+        for (int row = 0; row < rows; ++row)
+        {
+            auto* model = new contact_model(this->m_dispatcher, this->m_wallet_manager, this);
+            this->m_addressbook.insert(position, model);
+        }
 
         endInsertRows();
         return true;
@@ -109,7 +114,7 @@ namespace atomic_dex
             int rows     = 1;
             spdlog::trace("(addressbook_model::initializeFromCfg) inserting {} elements at position {}", rows, position);
 
-            auto* contact_ptr = new contact_model(this->m_wallet_manager, nullptr);
+            auto* contact_ptr = new contact_model(this->m_dispatcher, this->m_wallet_manager, nullptr);
             contact_ptr->set_name(QString::fromStdString(cur_contact.name));
             for (auto&& contact_contents: cur_contact.contents)
             {
@@ -179,5 +184,12 @@ namespace atomic_dex
                 this->remove_at(cur_contact_idx);
             }
         }
+    }
+
+    void
+    addressbook_model::on_require_addressbook_reset([[maybe_unused]] const reset_addresbook_model& evt)
+    {
+        spdlog::trace("Youhou");
+        this->m_addressbook_proxy->reset_sort();
     }
 } // namespace atomic_dex

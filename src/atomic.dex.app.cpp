@@ -389,8 +389,7 @@ namespace atomic_dex
         QObject(pParent),
         m_update_status(QJsonObject{
             {"update_needed", false}, {"changelog", ""}, {"current_version", ""}, {"download_url", ""}, {"new_version", ""}, {"rpc_code", 0}, {"status", ""}}),
-        m_coin_info(new current_coin_info(dispatcher_, this)),
-        m_addressbook(new addressbook_model(this->m_wallet_manager, this)),
+        m_coin_info(new current_coin_info(dispatcher_, this)), m_addressbook(new addressbook_model(this->dispatcher_, this->m_wallet_manager, this)),
         m_portfolio(new portfolio_model(this->system_manager_, this->m_config, this))
     {
         get_dispatcher().sink<refresh_update_status>().connect<&application::on_refresh_update_status_event>(*this);

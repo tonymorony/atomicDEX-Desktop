@@ -41,7 +41,7 @@ namespace atomic_dex
         };
 
       public:
-        explicit addressbook_model(atomic_dex::qt_wallet_manager& wallet_manager_, QObject* parent = nullptr) noexcept;
+        explicit addressbook_model(entt::dispatcher& dispatcher, atomic_dex::qt_wallet_manager& wallet_manager_, QObject* parent = nullptr) noexcept;
         ~addressbook_model() noexcept final;
         [[nodiscard]] QVariant data(const QModelIndex& index, int role) const final;
         [[nodiscard]] int      rowCount(const QModelIndex& parent = QModelIndex()) const final;
@@ -55,10 +55,14 @@ namespace atomic_dex
 
         //! Properties
         [[nodiscard]] addressbook_proxy_model* get_addressbook_proxy_mdl() const noexcept;
+
+        //! Events
+        void on_require_addressbook_reset(const reset_addresbook_model&);
       signals:
         void addressbookProxyChanged();
 
       private:
+        entt::dispatcher&                    m_dispatcher;
         atomic_dex::qt_wallet_manager&       m_wallet_manager;
         atomic_dex::addressbook_proxy_model* m_addressbook_proxy;
         QVector<contact_model*>              m_addressbook;

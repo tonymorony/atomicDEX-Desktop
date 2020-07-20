@@ -57,4 +57,11 @@ namespace atomic_dex
         }
         return false;
     }
+
+    void
+    addressbook_proxy_model::reset_sort()
+    {
+        this->invalidate();
+        this->sort(0);
+    }
 } // namespace atomic_dex

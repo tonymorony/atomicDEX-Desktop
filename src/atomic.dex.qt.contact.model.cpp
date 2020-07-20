@@ -25,8 +25,8 @@
 
 namespace atomic_dex
 {
-    contact_model::contact_model(atomic_dex::qt_wallet_manager& wallet_manager_, QObject* parent) noexcept :
-        QAbstractListModel(parent), m_wallet_manager(wallet_manager_)
+    contact_model::contact_model(entt::dispatcher& dispatcher, atomic_dex::qt_wallet_manager& wallet_manager_, QObject* parent) noexcept :
+        QAbstractListModel(parent), m_dispatcher(dispatcher), m_wallet_manager(wallet_manager_)
     {
         spdlog::trace("{} l{} f[{}]", __FUNCTION__, __LINE__, fs::path(__FILE__).filename().string());
         spdlog::trace("contact model created");
@@ -53,6 +53,7 @@ namespace atomic_dex
             this->m_wallet_manager.update_or_insert_contact_name(m_name, name);
             this->m_wallet_manager.update_wallet_cfg();
             m_name = name;
+            this->m_dispatcher.trigger<reset_addresbook_model>();
             emit nameChanged();
         }
     }

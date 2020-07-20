@@ -216,8 +216,8 @@ ColumnLayout {
                                 text: "💾"
                                 minWidth: height
                                 onClicked: {
-                                    modelData.name = name_input.text
                                     editing = global_edit_in_progress = false
+                                    modelData.name = name_input.text
                                 }
                             }
 
