@@ -37,7 +37,7 @@ namespace atomic_dex
         mm2& m_mm2_instance;
 
         //! OHLC Related
-        t_current_orderbook_ticker_pair m_current_orderbook_ticker_pair;
+        t_current_orderbook_ticker_pair m_current_orderbook_ticker_pair{"", ""};
         t_supported_pairs               m_supported_pair{"eth-btc",  "eth-usdc", "btc-usdc", "btc-busd", "btc-tusd", "bat-btc",  "bat-eth",  "bat-usdc",
                                            "bat-tusd", "bat-busd", "bch-btc",  "bch-eth",  "bch-usdc", "bch-tusd", "bch-busd", "dash-btc",
                                            "dash-eth", "dgb-btc",  "doge-btc", "kmd-btc",  "kmd-eth",  "ltc-btc",  "ltc-eth",  "ltc-usdc",
@@ -81,6 +81,8 @@ namespace atomic_dex
         void on_mm2_started(const mm2_started& evt) noexcept;
 
         nlohmann::json get_ohlc_data(const std::string& range) noexcept;
+
+        nlohmann::json get_all_ohlc_data() noexcept;
 
         //! Event that occur when the ticker pair is changed in the front end
         void on_current_orderbook_ticker_pair_changed(const orderbook_refresh& evt) noexcept;
