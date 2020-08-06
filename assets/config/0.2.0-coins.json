@@ -21,7 +21,11 @@
     "type": "UTXO",
     "is_erc_20": false,
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 5
+    }
   },
   "BTC": {
     "coin": "BTC",
@@ -45,7 +49,11 @@
       "https://blockstream.info/"
     ],
     "active": true,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 1
+    }
   },
   "BCH": {
     "active": false,
@@ -69,7 +77,11 @@
     ],
     "is_erc_20": false,
     "type": "UTXO",
-    "name": "Bitcoin Cash"
+    "name": "Bitcoin Cash",
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 1
+    }
   },
   "BET": {
     "coin": "BET",
@@ -93,7 +105,10 @@
       "https://bet.explorer.dexstats.info/"
     ],
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": true
+    }
   },
   "BOTS": {
     "coin": "BOTS",
@@ -117,7 +132,10 @@
       "https://bots.explorer.dexstats.info/"
     ],
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": true
+    }
   },
   "BUSD": {
     "coin": "BUSD",
@@ -135,7 +153,11 @@
     "type": "ERC-20",
     "is_erc_20": true,
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 3
+    }
   },
   "CCL": {
     "coin": "CCL",
@@ -159,7 +181,10 @@
     "type": "Smart Chain",
     "is_erc_20": false,
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": true
+    }
   },
   "CRYPTO": {
     "coin": "CRYPTO",
@@ -183,7 +208,10 @@
       "https://crypto.explorer.dexstats.info/"
     ],
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": true
+    }
   },
   "DAI": {
     "coin": "DAI",
@@ -201,7 +229,11 @@
     "type": "ERC-20",
     "is_erc_20": true,
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 3
+    }
   },
   "DASH": {
     "active": false,
@@ -225,7 +257,11 @@
       "https://explorer.dash.org/"
     ],
     "is_erc_20": false,
-    "type": "UTXO"
+    "type": "UTXO",
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 2
+    }
   },
   "DGB": {
     "active": false,
@@ -248,7 +284,11 @@
       "https://digiexplorer.info/"
     ],
     "is_erc_20": false,
-    "type": "UTXO"
+    "type": "UTXO",
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 7
+    }
   },
   "DOGE": {
     "coin": "DOGE",
@@ -271,7 +311,11 @@
     "type": "UTXO",
     "is_erc_20": false,
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 2
+    }
   },
   "ECA": {
     "coin": "ECA",
@@ -295,7 +339,11 @@
     "type": "UTXO",
     "is_erc_20": false,
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 5
+    }
   },
   "EMC2": {
     "coin": "EMC2",
@@ -319,7 +367,10 @@
     "type": "UTXO",
     "is_erc_20": false,
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": true
+    }
   },
   "FTC": {
     "coin": "FTC",
@@ -342,7 +393,11 @@
     "type": "UTXO",
     "is_erc_20": false,
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 5
+    }
   },
   "JUMBLR": {
     "coin": "JUMBLR",
@@ -366,7 +421,10 @@
       "https://jumblr.explorer.dexstats.info/"
     ],
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": true
+    }
   },
   "LTC": {
     "active": false,
@@ -390,7 +448,11 @@
     ],
     "is_erc_20": false,
     "type": "UTXO",
-    "name": "Litecoin"
+    "name": "Litecoin",
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 2
+    }
   },
   "MCL": {
     "active": false,
@@ -414,7 +476,11 @@
     ],
     "is_erc_20": false,
     "type": "Smart Chain",
-    "name": "MCL"
+    "name": "MCL",
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 5
+    }
   },
   "PAX": {
     "coin": "PAX",
@@ -432,7 +498,11 @@
     "type": "ERC-20",
     "is_erc_20": true,
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 3
+    }
   },
   "ETH": {
     "active": false,
@@ -450,7 +520,11 @@
     ],
     "is_erc_20": true,
     "type": "ERC-20",
-    "name": "Ethereum"
+    "name": "Ethereum",
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 3
+    }
   },
   "USDC": {
     "active": false,
@@ -468,7 +542,11 @@
     ],
     "is_erc_20": true,
     "type": "ERC-20",
-    "name": "USD Coin"
+    "name": "USD Coin",
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 3
+    }
   },
   "AWC": {
     "active": false,
@@ -486,7 +564,11 @@
     ],
     "is_erc_20": true,
     "type": "ERC-20",
-    "name": "Atomic Wallet Coin"
+    "name": "Atomic Wallet Coin",
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 3
+    }
   },
   "BAT": {
     "coin": "BAT",
@@ -503,7 +585,11 @@
     "type": "ERC-20",
     "is_erc_20": true,
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 3
+    }
   },
   "TUSD": {
     "active": false,
@@ -521,7 +607,11 @@
     ],
     "is_erc_20": true,
     "type": "ERC-20",
-    "name": "True USD"
+    "name": "True USD",
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 3
+    }
   },
   "KMD": {
     "coin": "KMD",
@@ -547,7 +637,10 @@
       "https://kmdexplorer.io/"
     ],
     "active": true,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": true
+    }
   },
   "LABS": {
     "coin": "LABS",
@@ -571,7 +664,10 @@
       "https://labs.explorer.dexstats.info/"
     ],
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": true
+    }
   },
   "MGW": {
     "coin": "MGW",
@@ -595,7 +691,10 @@
       "https://mgw.explorer.dexstats.info/"
     ],
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": true
+    }
   },
   "DEX": {
     "coin": "DEX",
@@ -619,7 +718,10 @@
       "https://dex.explorer.dexstats.info/"
     ],
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": true
+    }
   },
   "RICK": {
     "coin": "RICK",
@@ -644,7 +746,11 @@
       "https://rick.kmd.dev/"
     ],
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 1
+    }
   },
   "MORTY": {
     "coin": "MORTY",
@@ -669,7 +775,11 @@
       "https://morty.kmd.dev/"
     ],
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 1
+    }
   },
   "PANGEA": {
     "coin": "PANGEA",
@@ -693,7 +803,10 @@
       "https://pangea.explorer.dexstats.info/"
     ],
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": true
+    }
   },
   "REVS": {
     "coin": "REVS",
@@ -717,7 +830,10 @@
       "https://revs.explorer.dexstats.info/"
     ],
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": true
+    }
   },
   "RFOX": {
     "coin": "RFOX",
@@ -741,7 +857,10 @@
     "type": "Smart Chain",
     "is_erc_20": false,
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": true
+    }
   },
   "CHIPS": {
     "coin": "CHIPS",
@@ -765,7 +884,10 @@
       "https://explorer.chips.cash/"
     ],
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": true
+    }
   },
   "HUSH": {
     "coin": "HUSH",
@@ -789,7 +911,10 @@
       "https://explorer.myhush.org/"
     ],
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": true
+    }
   },
   "SUPERNET": {
     "coin": "SUPERNET",
@@ -813,7 +938,10 @@
       "https://supernet.explorer.dexstats.info/"
     ],
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": true
+    }
   },
   "VRSC": {
     "coin": "VRSC",
@@ -837,7 +965,11 @@
       "https://explorer.veruscoin.io/"
     ],
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 5
+    }
   },
   "ILN": {
     "coin": "ILN",
@@ -858,7 +990,10 @@
       "https://explorer.ilien.io/"
     ],
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": true
+    }
   },
   "NAV": {
     "coin": "NAV",
@@ -881,7 +1016,11 @@
     "type": "UTXO",
     "is_erc_20": false,
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 10
+    }
   },
   "OOT": {
     "coin": "OOT",
@@ -905,7 +1044,10 @@
     "type": "Smart Chain",
     "is_erc_20": false,
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": true
+    }
   },
   "QTUM": {
     "coin": "QTUM",
@@ -928,7 +1070,11 @@
     "type": "UTXO",
     "is_erc_20": false,
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 3
+    }
   },
   "RVN": {
     "coin": "RVN",
@@ -951,7 +1097,11 @@
     "type": "UTXO",
     "is_erc_20": false,
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 3
+    }
   },
   "XZC": {
     "coin": "XZC",
@@ -974,7 +1124,11 @@
     "type": "UTXO",
     "is_erc_20": false,
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 1
+    }
   },
   "ZEC": {
     "active": false,
@@ -997,7 +1151,11 @@
       "https://explorer.zcha.in/"
     ],
     "is_erc_20": false,
-    "type": "UTXO"
+    "type": "UTXO",
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 3
+    }
   },
   "ZER": {
     "coin": "ZER",
@@ -1021,6 +1179,10 @@
     "type": "UTXO",
     "is_erc_20": false,
     "active": false,
-    "currently_enabled": false
+    "currently_enabled": false,
+    "default_protection": {
+        "dpow": false,
+        "confirmations_amount": 5
+    }
   }
 }
