@@ -211,6 +211,9 @@ Item {
         if(is_swap) {
             console.log("Swapping current pair, it was: ", base, rel)
             API.get().trading_pg.swap_market_pair()
+            const tmp = base
+            base = rel
+            rel = tmp
         }
         else {
             console.log("Setting current orderbook with params: ", base, rel)
@@ -246,7 +249,7 @@ Item {
                 nota = default_config.requires_notarization ? "1" : "0"
             }
 
-            if(nota !== "1") {
+            if(nota !== "1" && default_config.required_confirmations !== undefined && default_config.required_confirmations !== null) {
                 confs = default_config.required_confirmations.toString()
             }
         }
@@ -419,7 +422,7 @@ Item {
                     font.pixelSize: Style.textSizeSmall4
                     color: Style.colorRed
 
-                    text_value: API.get().empty_string + (
+                    text_value: API.get().settings_pg.empty_string + (
                                     General.isZero(getCurrentPrice()) ? (qsTr("Please fill the price field")) :
                                     notEnoughBalance() ? (qsTr("%1 balance is lower than minimum trade amount").arg(base_ticker) + " : " + General.getMinTradeAmount()) :
                                     notEnoughBalanceForFees() ?

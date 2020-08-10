@@ -114,13 +114,13 @@ Item {
 
             DefaultText {
                 id: news
-                text_value: API.get().empty_string + (qsTr("News"))
+                text_value: API.get().settings_pg.empty_string + (qsTr("News"))
                 function reset() { }
             }
 
             DefaultText {
                 id: dapps
-                text_value: API.get().empty_string + (qsTr("Dapps"))
+                text_value: API.get().settings_pg.empty_string + (qsTr("Dapps"))
                 function reset() { }
             }
 
@@ -155,20 +155,12 @@ Item {
         }
     }
 
+    // Unread notifications count
     Rectangle {
         radius: 1337
         width: count_text.height * 1.5
         height: width
         z: 1
-
-        Timer {
-            interval: 500
-            running: true
-            repeat: true
-            onTriggered: {
-                console.log(sidebar.app_logo.x, sidebar.app_logo.y, sidebar.app_logo.width)
-            }
-        }
 
         x: sidebar.app_logo.x + sidebar.app_logo.width - 20
         y: sidebar.app_logo.y
@@ -182,11 +174,16 @@ Item {
             font.bold: true
             color: notifications_panel.notifications_list.length > 0 ? Style.colorWhite9 : Style.colorWhite12
         }
+    }
 
-        MouseArea {
-            anchors.fill: parent
-            onClicked: notifications_panel.visible = !notifications_panel.visible
-        }
+    // Notifications panel button
+    MouseArea {
+        x: sidebar.app_logo.x
+        y: sidebar.app_logo.y
+        width: sidebar.app_logo.width
+        height: sidebar.app_logo.height
+
+        onClicked: notifications_panel.visible = !notifications_panel.visible
     }
 
     NotificationsPanel {
@@ -194,8 +191,7 @@ Item {
         width: 600
         height: 500
         anchors.left: sidebar.right
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: -40
+        anchors.top: parent.top
     }
 
     DropShadow {
@@ -221,11 +217,11 @@ Item {
             width: parent.width
 
             ModalHeader {
-                title: API.get().empty_string + (General.cex_icon + " " + qsTr("CEX Data"))
+                title: API.get().settings_pg.empty_string + (General.cex_icon + " " + qsTr("CEX Data"))
             }
 
             DefaultText {
-                text_value: API.get().empty_string + (qsTr('Markets data (prices, charts, etc.) marked with the ⓘ icon originates from third party sources. (<a href="https://coinpaprika.com">coinpaprika.com</a>)'))
+                text_value: API.get().settings_pg.empty_string + (qsTr('Markets data (prices, charts, etc.) marked with the ⓘ icon originates from third party sources. (<a href="https://coinpaprika.com">coinpaprika.com</a>)'))
                 wrapMode: Text.WordWrap
                 Layout.preferredWidth: cex_rates_modal.width
 
