@@ -98,7 +98,7 @@ find_package(doctest CONFIG REQUIRED)
 find_package(folly CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem random)
-find_package(Qt5 COMPONENTS Core Quick LinguistTools Svg Charts REQUIRED)
+find_package(Qt5 COMPONENTS Core Quick LinguistTools Svg Charts Widgets REQUIRED)
 find_package(unofficial-sodium CONFIG REQUIRED)
 find_library(unofficial-bitcoin-external bitcoin)
 find_path(unofficial-btc-headers bitcoin/bitcoin.hpp)
@@ -155,12 +155,15 @@ target_sources(atomic_qt_shared_deps INTERFACE
         ${CMAKE_SOURCE_DIR}/src/atomic.dex.wallet.config.cpp
         ${CMAKE_SOURCE_DIR}/src/atomic.dex.security.cpp
         ${CMAKE_SOURCE_DIR}/src/atomic.dex.update.service.cpp
+        ${CMAKE_SOURCE_DIR}/src/atomic.dex.notification.manager.cpp
         ${CMAKE_SOURCE_DIR}/src/atomic.dex.qt.orders.model.cpp
         ${CMAKE_SOURCE_DIR}/src/atomic.dex.qt.orders.proxy.model.cpp
         ${CMAKE_SOURCE_DIR}/src/atomic.dex.qt.candlestick.charts.model.cpp
         ${CMAKE_SOURCE_DIR}/src/atomic.dex.qt.addressbook.model.cpp
         ${CMAKE_SOURCE_DIR}/src/atomic.dex.qt.addressbook.proxy.filter.model.cpp
         ${CMAKE_SOURCE_DIR}/src/atomic.dex.qt.contact.model.cpp
+        ${CMAKE_SOURCE_DIR}/src/atomic.dex.qt.trading.page.cpp
+        ${CMAKE_SOURCE_DIR}/src/atomic.dex.qt.market.pairs.cpp
         ${CMAKE_SOURCE_DIR}/src/atomic.dex.qt.orderbook.cpp
         ${CMAKE_SOURCE_DIR}/src/atomic.dex.qt.orderbook.model.cpp
         ${CMAKE_SOURCE_DIR}/src/atomic.dex.qt.orderbook.proxy.model.cpp
@@ -186,6 +189,7 @@ target_link_libraries(atomic_qt_shared_deps
         Qt5::Quick
         Qt5::Svg
         Qt5::Charts
+        Qt5::Widgets
         qzxing
         antara::world
         Boost::filesystem

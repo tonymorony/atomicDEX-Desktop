@@ -14,38 +14,37 @@
  *                                                                            *
  ******************************************************************************/
 
-#pragma once
-
-#include <QJsonArray>
-#include <QString>
+#include "atomic.dex.notification.manager.hpp"
 
 namespace atomic_dex
 {
-    struct portfolio_data
+    notification_manager::notification_manager(entt::dispatcher& dispatcher, QObject* parent) noexcept : QObject(parent), m_dispatcher(dispatcher)
     {
-        //! eg: BTC,ETH,KMD (constant)
-        const QString ticker;
+        spdlog::trace("{} l{} f[{}]", __FUNCTION__, __LINE__, fs::path(__FILE__).filename().string());
+        spdlog::trace("notification manager created");
+    }
 
-        //! eg: Bitcoin
-        const QString name;
+    notification_manager::~notification_manager() noexcept
+    {
+        spdlog::trace("{} l{} f[{}]", __FUNCTION__, __LINE__, fs::path(__FILE__).filename().string());
+        spdlog::trace("notification manager destroyed");
+    }
 
-        //! eg: 1
-        QString balance;
+    void
+    notification_manager::on_swap_status_notification(const atomic_dex::swap_status_notification& evt)
+    {
+        emit updateSwapStatus(evt.prev_status, evt.new_status, evt.uuid, evt.base, evt.rel, evt.human_date);
+    }
 
-        //! eg: 18800 $
-        QString main_currency_balance;
+    void
+    notification_manager::connect_signals() noexcept
+    {
+        m_dispatcher.sink<swap_status_notification>().connect<&notification_manager::on_swap_status_notification>(*this);
+    }
 
-        //! eg: +2.4%
-        QString change_24h;
-
-        //! eg: 9400 $
-        QString main_currency_price_for_one_unit;
-
-        //! Paprika data rates
-        QJsonArray trend_7d;
-
-        bool is_excluded{false};
-
-        QString display;
-    };
+    void
+    notification_manager::disconnect_signals() noexcept
+    {
+        m_dispatcher.sink<swap_status_notification>().disconnect<&notification_manager::on_swap_status_notification>(*this);
+    }
 } // namespace atomic_dex

@@ -16,36 +16,17 @@
 
 #pragma once
 
-#include <QJsonArray>
 #include <QString>
 
 namespace atomic_dex
 {
-    struct portfolio_data
+    struct swap_status_notification
     {
-        //! eg: BTC,ETH,KMD (constant)
-        const QString ticker;
-
-        //! eg: Bitcoin
-        const QString name;
-
-        //! eg: 1
-        QString balance;
-
-        //! eg: 18800 $
-        QString main_currency_balance;
-
-        //! eg: +2.4%
-        QString change_24h;
-
-        //! eg: 9400 $
-        QString main_currency_price_for_one_unit;
-
-        //! Paprika data rates
-        QJsonArray trend_7d;
-
-        bool is_excluded{false};
-
-        QString display;
+        QString uuid;
+        QString prev_status;
+        QString new_status;
+        QString base;
+        QString rel;
+        QString human_date;
     };
-} // namespace atomic_dex
+}

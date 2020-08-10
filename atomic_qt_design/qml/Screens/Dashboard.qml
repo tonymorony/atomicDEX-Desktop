@@ -6,6 +6,7 @@ import QtGraphicalEffects 1.0
 import "../Components"
 import "../Constants"
 
+import "../Dashboard"
 import "../Portfolio"
 import "../Wallet"
 import "../Exchange"
@@ -38,6 +39,7 @@ Item {
         news.reset()
         dapps.reset()
         settings.reset()
+        notifications_panel.reset()
     }
 
     function inCurrentPage() {
@@ -50,11 +52,11 @@ Item {
         if(prev_page !== current_page) {
             // Handle DEX enter/exit
             if(current_page === General.idx_dashboard_exchange) {
-                API.get().on_gui_enter_dex()
+                API.get().trading_pg.on_gui_enter_dex()
                 exchange.onOpened()
             }
             else if(prev_page === General.idx_dashboard_exchange) {
-                API.get().on_gui_leave_dex()
+                API.get().trading_pg.on_gui_leave_dex()
             }
 
             // Opening of other pages
@@ -78,12 +80,6 @@ Item {
         repeat: true
         onTriggered: General.enableEthIfNeeded()
     }
-
-    // Sidebar, left side
-    Sidebar {
-        id: sidebar
-    }
-
     // Right side
     Rectangle {
         color: Style.colorTheme8
@@ -133,6 +129,73 @@ Item {
                 Layout.alignment: Qt.AlignCenter
             }
         }
+    }
+
+    // Sidebar, left side
+    Sidebar {
+        id: sidebar
+    }
+
+    // Global click
+    MouseArea {
+        anchors.fill: parent
+        propagateComposedEvents: true
+
+        onClicked: mouse.accepted = false
+        onReleased: mouse.accepted = false
+        onPressAndHold: mouse.accepted = false
+        onDoubleClicked: mouse.accepted = false
+        onPositionChanged: mouse.accepted = false
+        onPressed: {
+            // Close notifications panel on outside click
+            if(notifications_panel.visible)
+                notifications_panel.visible = false
+
+            mouse.accepted = false
+        }
+    }
+
+    Rectangle {
+        radius: 1337
+        width: count_text.height * 1.5
+        height: width
+        z: 1
+
+        Timer {
+            interval: 500
+            running: true
+            repeat: true
+            onTriggered: {
+                console.log(sidebar.app_logo.x, sidebar.app_logo.y, sidebar.app_logo.width)
+            }
+        }
+
+        x: sidebar.app_logo.x + sidebar.app_logo.width - 20
+        y: sidebar.app_logo.y
+        color: notifications_panel.notifications_list.length > 0 ? Style.colorRed : Style.colorWhite7
+
+        DefaultText {
+            id: count_text
+            anchors.centerIn: parent
+            text_value: notifications_panel.notifications_list.length
+            font.pixelSize: Style.textSizeSmall1
+            font.bold: true
+            color: notifications_panel.notifications_list.length > 0 ? Style.colorWhite9 : Style.colorWhite12
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: notifications_panel.visible = !notifications_panel.visible
+        }
+    }
+
+    NotificationsPanel {
+        id: notifications_panel
+        width: 600
+        height: 500
+        anchors.left: sidebar.right
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: -40
     }
 
     DropShadow {

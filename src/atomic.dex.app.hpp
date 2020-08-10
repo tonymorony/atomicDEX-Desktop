@@ -32,7 +32,9 @@
 //! Project Headers
 #include "atomic.dex.cfg.hpp"
 #include "atomic.dex.mm2.hpp"
+#include "atomic.dex.notification.manager.hpp"
 #include "atomic.dex.provider.coinpaprika.hpp"
+#include "atomic.dex.qt.actions.hpp"
 #include "atomic.dex.qt.addressbook.model.hpp"
 #include "atomic.dex.qt.bindings.hpp"
 #include "atomic.dex.qt.candlestick.charts.model.hpp"
@@ -41,11 +43,10 @@
 #include "atomic.dex.qt.orderbook.hpp"
 #include "atomic.dex.qt.orders.model.hpp"
 #include "atomic.dex.qt.portfolio.model.hpp"
+#include "atomic.dex.qt.trading.page.hpp"
 #include "atomic.dex.qt.wallet.manager.hpp"
 
 namespace ag = antara::gaming;
-
-inline constexpr std::size_t g_max_actions_size{128};
 
 namespace atomic_dex
 {
@@ -60,11 +61,11 @@ namespace atomic_dex
         Q_PROPERTY(QObject* current_coin_info READ get_current_coin_info NOTIFY coinInfoChanged)
         Q_PROPERTY(addressbook_model* addressbook_mdl READ get_addressbook NOTIFY addressbookChanged)
         Q_PROPERTY(orders_model* orders_mdl READ get_orders NOTIFY ordersChanged)
-        Q_PROPERTY(qt_orderbook_wrapper* orderbook READ get_orderbook_wrapper NOTIFY orderbookChanged)
-        Q_PROPERTY(candlestick_charts_model* candlestick_charts_mdl READ get_candlestick_charts NOTIFY candlestickChartsChanged)
         Q_PROPERTY(QVariant update_status READ get_update_status NOTIFY updateStatusChanged)
         Q_PROPERTY(portfolio_model* portfolio_mdl READ get_portfolio NOTIFY portfolioChanged)
+        Q_PROPERTY(notification_manager* notification_mgr READ get_notification_manager)
         Q_PROPERTY(internet_service_checker* internet_checker READ get_internet_checker NOTIFY internetCheckerChanged)
+        Q_PROPERTY(trading_page* trading_pg READ get_trading_page NOTIFY tradingPageChanged)
         Q_PROPERTY(QString current_currency READ get_current_currency WRITE set_current_currency NOTIFY onCurrencyChanged)
         Q_PROPERTY(QString current_currency_sign READ get_current_currency_sign NOTIFY onCurrencySignChanged)
         Q_PROPERTY(QString current_fiat_sign READ get_current_fiat_sign NOTIFY onFiatSignChanged)
@@ -83,24 +84,20 @@ namespace atomic_dex
         void process_refresh_enabled_coin_action();
         void process_refresh_current_ticker_infos();
 
-        //! Private enums
-        enum class action
+        enum events_action
         {
-            refresh_enabled_coin             = 0,
-            refresh_current_ticker           = 1,
-            refresh_ohlc                     = 2,
-            refresh_transactions             = 3,
-            refresh_portfolio_ticker_balance = 4,
-            refresh_update_status            = 5,
-            post_process_orders_finished     = 6,
-            post_process_swaps_finished      = 7,
-            post_process_orderbook_finished  = 8
+            need_a_full_refresh_of_mm2 = 0,
+            candlestick_need_a_reset   = 1,
+            orderbook_need_a_reset     = 2,
+            about_to_exit_app          = 3,
+            size                       = 4
         };
 
         //! Private typedefs
         using t_actions_queue          = boost::lockfree::queue<action>;
         using t_synchronized_string    = boost::synchronized_value<std::string>;
         using t_manager_model_registry = std::unordered_map<std::string, QObject*>;
+        using t_events_actions         = std::array<std::atomic_bool, events_action::size>;
 
         //! Private members fields
         atomic_dex::cfg               m_config{load_cfg()};
@@ -108,7 +105,6 @@ namespace atomic_dex
         atomic_dex::qt_wallet_manager m_wallet_manager;
         t_actions_queue               m_actions_queue{g_max_actions_size};
         t_synchronized_string         m_ticker_balance_to_refresh;
-        bool                          m_need_a_full_refresh_of_mm2{false};
         QVariantList                  m_enabled_coins;
         QVariantList                  m_enableable_coins;
         QVariant                      m_update_status;
@@ -118,12 +114,7 @@ namespace atomic_dex
         QString                       m_current_balance_all{"0.00"};
         current_coin_info*            m_coin_info;
         t_manager_model_registry      m_manager_models;
-        candlestick_charts_model*     m_candlestick_chart_ohlc;
-        std::atomic_bool              m_candlestick_need_a_reset{false};
-        qt_orderbook_wrapper*         m_orderbook;
-        std::atomic_bool              m_orderbook_need_a_reset{false};
-        internet_service_checker*     m_internet_service_checker;
-        std::atomic_bool              m_about_to_exit_app{false};
+        t_events_actions              m_event_actions{{false}};
 
       public:
         //! Constructor
@@ -140,12 +131,9 @@ namespace atomic_dex
         void on_coin_disabled_event(const coin_disabled&) noexcept;
         void on_mm2_initialized_event(const mm2_initialized&) noexcept;
         void on_mm2_started_event(const mm2_started&) noexcept;
-        void on_refresh_ohlc_event(const refresh_ohlc_needed&) noexcept;
         void on_refresh_update_status_event(const refresh_update_status&) noexcept;
         void on_process_orders_finished_event(const process_orders_finished&) noexcept;
         void on_process_swaps_finished_event(const process_swaps_finished&) noexcept;
-        void on_process_orderbook_finished_event(const process_orderbook_finished&) noexcept;
-        void on_start_fetching_new_ohlc_data_event(const start_fetching_new_ohlc_data&);
 
         //! Properties Getter
         static const QString&      get_empty_string();
@@ -157,9 +145,9 @@ namespace atomic_dex
         addressbook_model*         get_addressbook() const noexcept;
         portfolio_model*           get_portfolio() const noexcept;
         orders_model*              get_orders() const noexcept;
-        candlestick_charts_model*  get_candlestick_charts() const noexcept;
+        notification_manager*      get_notification_manager() const noexcept;
+        trading_page*              get_trading_page() const noexcept;
         internet_service_checker*  get_internet_checker() const noexcept;
-        qt_orderbook_wrapper*      get_orderbook_wrapper() const noexcept;
         QVariantList               get_enabled_coins() const noexcept;
         QVariantList               get_enableable_coins() const noexcept;
         QString                    get_current_currency() const noexcept;
@@ -216,13 +204,6 @@ namespace atomic_dex
         Q_INVOKABLE QString send(const QString& tx_hex);
         Q_INVOKABLE QString send_rewards(const QString& tx_hex);
 
-        //! Trading QML API Bindings
-        Q_INVOKABLE void on_gui_enter_dex();
-        Q_INVOKABLE void on_gui_leave_dex();
-        Q_INVOKABLE void cancel_order(const QString& order_id);
-        Q_INVOKABLE void cancel_all_orders();
-        Q_INVOKABLE void cancel_all_orders_by_ticker(const QString& ticker);
-
         //! Others
         Q_INVOKABLE static bool    mnemonic_validate(const QString& entropy);
         Q_INVOKABLE static QString retrieve_seed(const QString& wallet_name, const QString& password);
@@ -234,13 +215,6 @@ namespace atomic_dex
         Q_INVOKABLE bool           enable_coins(const QStringList& coins);
         Q_INVOKABLE QString        get_balance(const QString& coin);
         Q_INVOKABLE static QString get_price_amount(const QString& base_amount, const QString& rel_amount);
-        Q_INVOKABLE QString        place_buy_order(
-                   const QString& base, const QString& rel, const QString& price, const QString& volume, bool is_created_order, const QString& price_denom,
-                   const QString& price_numer);
-        Q_INVOKABLE QString place_sell_order(
-            const QString& base, const QString& rel, const QString& price, const QString& volume, bool is_created_order, const QString& price_denom,
-            const QString& price_numer);
-        Q_INVOKABLE void set_current_orderbook(const QString& base, const QString& rel);
         Q_INVOKABLE bool do_i_have_enough_funds(const QString& ticker, const QString& amount) const;
         Q_INVOKABLE bool disable_coins(const QStringList& coins);
         Q_INVOKABLE bool is_claiming_ready(const QString& ticker);
@@ -249,7 +223,6 @@ namespace atomic_dex
 
         Q_INVOKABLE QString        get_cex_rates(const QString& base, const QString& rel);
         Q_INVOKABLE QString        get_fiat_from_amount(const QString& ticker, const QString& amount);
-        Q_INVOKABLE QVariantMap    find_closest_ohlc_data(int range, int timestamp);
         Q_INVOKABLE QVariant       get_coin_info(const QString& ticker);
         Q_INVOKABLE bool           export_swaps(const QString& csv_filename) noexcept;
         Q_INVOKABLE bool           export_swaps_json() noexcept;
@@ -274,12 +247,10 @@ namespace atomic_dex
         void onWalletDefaultNameChanged();
         void myOrdersUpdated();
         void addressbookChanged();
-        void OHLCDataUpdated();
         void portfolioChanged();
         void updateStatusChanged();
         void ordersChanged();
-        void candlestickChartsChanged();
-        void orderbookChanged();
+        void tradingPageChanged();
         void internetCheckerChanged();
       public slots:
         void exit_handler();

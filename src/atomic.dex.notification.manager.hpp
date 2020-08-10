@@ -16,36 +16,35 @@
 
 #pragma once
 
-#include <QJsonArray>
-#include <QString>
+//! QT Include
+#include <QObject>
+
+//! PCH Header
+#include "atomic.dex.pch.hpp"
+
+//! Project Headers
+#include "atomic.dex.qt.events.hpp"
 
 namespace atomic_dex
 {
-    struct portfolio_data
+    class notification_manager final : public QObject
     {
-        //! eg: BTC,ETH,KMD (constant)
-        const QString ticker;
+        Q_OBJECT
+      public:
+        notification_manager(entt::dispatcher& dispatcher, QObject* parent = nullptr) noexcept;
+        ~notification_manager() noexcept final;
 
-        //! eg: Bitcoin
-        const QString name;
+        //! Public API
+        void connect_signals() noexcept;
+        void disconnect_signals() noexcept;
 
-        //! eg: 1
-        QString balance;
+        //! Callbacks
+        void on_swap_status_notification(const swap_status_notification& evt);
 
-        //! eg: 18800 $
-        QString main_currency_balance;
+      signals:
+        void updateSwapStatus(QString old_swap_status, QString new_swap_status, QString swap_uuid, QString base_coin, QString rel_coin, QString human_date);
 
-        //! eg: +2.4%
-        QString change_24h;
-
-        //! eg: 9400 $
-        QString main_currency_price_for_one_unit;
-
-        //! Paprika data rates
-        QJsonArray trend_7d;
-
-        bool is_excluded{false};
-
-        QString display;
+      private:
+        entt::dispatcher& m_dispatcher;
     };
 } // namespace atomic_dex
