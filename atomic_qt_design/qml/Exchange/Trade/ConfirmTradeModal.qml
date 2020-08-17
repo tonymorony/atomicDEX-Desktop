@@ -1,4 +1,4 @@
-import QtQuick 2.12
+import QtQuick 2.14
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 
@@ -119,7 +119,7 @@ DefaultModal {
                 DefaultText {
                     visible: config_section.is_dpow_configurable
                     Layout.alignment: Qt.AlignHCenter
-                    text_value: API.get().settings_pg.empty_string + (General.cex_icon + " " + qsTr('<a href="https://komodoplatform.com/security-delayed-proof-of-work-dpow/">Read more about dPoW</a>'))
+                    text_value: API.get().settings_pg.empty_string + (General.cex_icon + ' <a href="https://komodoplatform.com/security-delayed-proof-of-work-dpow/">' + qsTr('Read more about dPoW') + '</a>')
                     wrapMode: Text.WordWrap
                     font.pixelSize: Style.textSizeSmall2
 
@@ -151,17 +151,13 @@ DefaultModal {
 
                     visible: config_section.is_dpow_configurable
                     checked: true
-                    onCheckedChanged: {
-                        if(checked) enable_normal_confs.checked = true
-                    }
-
                     text: API.get().settings_pg.empty_string + (qsTr("Enable Komodo dPoW security"))
                 }
 
                 DefaultText {
                     visible: enable_dpow_confs.visible && enable_dpow_confs.enabled
                     Layout.alignment: Qt.AlignHCenter
-                    text_value: API.get().settings_pg.empty_string + (General.cex_icon + " " + qsTr('<a href="https://komodoplatform.com/security-delayed-proof-of-work-dpow/">Read more about dPoW</a>'))
+                    text_value: API.get().settings_pg.empty_string + (General.cex_icon + ' <a href="https://komodoplatform.com/security-delayed-proof-of-work-dpow/">' + qsTr('Read more about dPoW') + '</a>')
                     wrapMode: Text.WordWrap
                     font.pixelSize: Style.textSizeSmall2
 
@@ -169,34 +165,28 @@ DefaultModal {
                     linkColor: color
                 }
 
-                // Normal configuration switch
-                Switch {
-                    id: enable_normal_confs
-                    Layout.alignment: Qt.AlignHCenter
-
-                    visible: !config_section.is_dpow_configurable || !enable_dpow_confs.checked
-                    enabled: !config_section.is_dpow_configurable || !enable_dpow_confs.checked
-                    checked: true
-
-                    text: API.get().settings_pg.empty_string + (qsTr("Change required confirmations"))
-                }
-
                 // Normal configuration settings
                 ColumnLayout {
                     Layout.alignment: Qt.AlignHCenter
-                    visible: enable_normal_confs.visible && enable_normal_confs.checked
-                    enabled: enable_normal_confs.enabled && enable_normal_confs.checked
+                    visible: !config_section.is_dpow_configurable || !enable_dpow_confs.checked
+                    enabled: !config_section.is_dpow_configurable || !enable_dpow_confs.checked
+
+                    HorizontalLine {
+                        Layout.topMargin: 10
+                        Layout.bottomMargin: 10
+                        Layout.fillWidth: true
+                    }
 
                     DefaultText {
                         Layout.alignment: Qt.AlignHCenter
-                        text_value: API.get().settings_pg.empty_string + (qsTr("Confirmations") + ": " + required_confirmation_count.value)
+                        text_value: API.get().settings_pg.empty_string + (qsTr("Required Confirmations") + ": " + required_confirmation_count.value)
                         color: parent.enabled ? Style.colorText : Style.colorTextDisabled
                     }
 
                     Slider {
+                        id: required_confirmation_count
                         readonly property int default_confirmation_count: 3
                         Layout.alignment: Qt.AlignHCenter
-                        id: required_confirmation_count
                         stepSize: 1
                         from: 1
                         to: 5
@@ -247,10 +237,7 @@ DefaultModal {
                             enable_custom_config: enable_custom_config.checked,
                             is_dpow_configurable: config_section.is_dpow_configurable,
                             enable_dpow_confs: enable_dpow_confs.checked,
-                            enable_normal_confs: enable_normal_confs.checked,
-                            normal_configuration: {
-                                  required_confirmation_count: required_confirmation_count.value
-                            },
+                            required_confirmation_count: required_confirmation_count.value,
                           }, config_section.default_config)
 
                     root.close()

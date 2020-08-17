@@ -1,4 +1,4 @@
-import QtQuick 2.12
+import QtQuick 2.14
 import QtQuick.Window 2.12
 import "Screens"
 import "Constants"
@@ -15,7 +15,16 @@ Window {
 
     Component.onCompleted: showMaximized()
 
-    onVisibilityChanged: API.get().change_state(visibility)
+    property int true_visibility
+
+    onVisibilityChanged: {
+        // 3 is minimized, ignore that
+        if(visibility !== 3)
+            true_visibility = visibility
+
+        API.get().change_state(visibility)
+    }
+
     App {
         anchors.fill: parent
     }

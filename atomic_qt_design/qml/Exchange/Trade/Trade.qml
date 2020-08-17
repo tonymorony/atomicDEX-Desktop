@@ -1,4 +1,4 @@
-import QtQuick 2.12
+import QtQuick 2.14
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 
@@ -160,7 +160,7 @@ Item {
         const rel = rel_ticker
         const amount = sell_mode ? getCurrentForm().getVolume() :
                                    General.formatDouble(getCurrentForm().getNeededAmountToSpend(getCurrentForm().getVolume()))
-        if(force || (General.fieldExists(base) && General.fieldExists(rel) && !General.isZero(amount))) {
+        if(force || (General.isFilled(base) && General.isFilled(rel) && !General.isZero(amount))) {
             getTradeInfo(base, rel, amount)
 
             // Since new implementation does not update fees instantly, re-cap the volume every time, just in case
@@ -196,15 +196,13 @@ Item {
                 // Check if it's a swap
                 if(base !== changed_ticker && rel === changed_ticker)
                     is_swap = true
-
-                base = changed_ticker
+                else base = changed_ticker
             }
             else {
                 // Check if it's a swap
                 if(rel !== changed_ticker && base === changed_ticker)
                     is_swap = true
-
-                rel = changed_ticker
+                else rel = changed_ticker
             }
         }
 
@@ -240,16 +238,16 @@ Item {
                 nota = options.enable_dpow_confs ? "1" : "0"
             }
 
-            if(nota !== "1" && options.enable_normal_confs) {
-                confs = options.normal_configuration.required_confirmation_count.toString()
+            if(nota !== "1") {
+                confs = options.required_confirmation_count.toString()
             }
         }
         else {
-            if(default_config.requires_notarization !== undefined && default_config.requires_notarization !== null) {
+            if(General.exists(default_config.requires_notarization)) {
                 nota = default_config.requires_notarization ? "1" : "0"
             }
 
-            if(nota !== "1" && default_config.required_confirmations !== undefined && default_config.required_confirmations !== null) {
+            if(nota !== "1" && General.exists(default_config.required_confirmations)) {
                 confs = default_config.required_confirmations.toString()
             }
         }

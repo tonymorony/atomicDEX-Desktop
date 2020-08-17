@@ -158,6 +158,12 @@ namespace atomic_dex
         if (s >= 5s)
         {
             spawn([this]() { fetch_current_orderbook_thread(false); });
+            spawn([this]() {
+                std::vector<std::future<void>> futures;
+                futures.emplace_back(spawn([this]() { process_orders(); }));
+                futures.emplace_back(spawn([this]() { process_swaps(); }));
+                for (auto&& fut: futures) { fut.get(); }
+            });
             m_orderbook_clock = std::chrono::high_resolution_clock::now();
         }
 
@@ -509,11 +515,31 @@ namespace atomic_dex
     mm2::process_orderbook(bool is_a_reset)
     {
         auto&& [base, rel] = m_synchronized_ticker_pair.get();
-        t_orderbook_request request{.base = base, .rel = rel};
-        auto                answer = rpc_orderbook(std::move(request));
+        t_orderbook_request               request{.base = base, .rel = rel};
+        ::mm2::api::max_taker_vol_request req_base{.coin = base};
+        ::mm2::api::max_taker_vol_request req_rel{.coin = rel};
+        std::array<std::future<void>, 2>  futures;
+
+        futures[0]  = spawn([&req_base, this]() {
+            auto answer = ::mm2::api::rpc_max_taker_vol(std::move(req_base));
+            if (answer.rpc_result_code not_eq -1)
+            {
+                this->m_synchronized_max_taker_vol->first = answer.result.value();
+            }
+        });
+
+        futures[1]  = spawn([&req_rel, this]() {
+            auto answer = ::mm2::api::rpc_max_taker_vol(std::move(req_rel));
+            if (answer.rpc_result_code not_eq -1)
+            {
+                this->m_synchronized_max_taker_vol->second = answer.result.value();
+            }
+        });
+        auto answer = rpc_orderbook(std::move(request));
         if (answer.rpc_result_code not_eq -1)
         {
             m_current_orderbook.insert_or_assign(base + "/" + rel, answer);
+            for (auto&& fut: futures) { fut.wait(); }
             this->dispatcher_.trigger<process_orderbook_finished>(is_a_reset);
         }
     }
@@ -541,11 +567,7 @@ namespace atomic_dex
         t_coins                        coins = get_enabled_coins();
         std::vector<std::future<void>> futures;
 
-        futures.reserve(coins.size() * 2 + 2);
-
-        futures.emplace_back(spawn([this]() { process_orders(); }));
-
-        futures.emplace_back(spawn([this]() { process_swaps(); }));
+        futures.reserve(coins.size() * 2);
 
         for (auto&& current_coin: coins)
         {
@@ -1023,7 +1045,7 @@ namespace atomic_dex
         return m_tx_state.at(ticker);
     }
 
-    bool
+    /*bool
     mm2::is_claiming_ready(const std::string& ticker) const noexcept
     {
         spdlog::debug("{} l{} f[{}]", __FUNCTION__, __LINE__, fs::path(__FILE__).filename().string());
@@ -1044,21 +1066,29 @@ namespace atomic_dex
             return true;
         }
         return false;
-    }
+    }*/
 
-    t_withdraw_answer
+    nlohmann::json
     mm2::claim_rewards(const std::string& ticker, t_mm2_ec& ec) noexcept
     {
         spdlog::debug("{} l{} f[{}]", __FUNCTION__, __LINE__, fs::path(__FILE__).filename().string());
-        const auto& info = get_coin_info(ticker);
-        if (not info.is_claimable || not do_i_have_enough_funds(ticker, t_float_50(info.minimal_claim_amount)))
+
+        nlohmann::json out  = nlohmann::json::object();
+        const auto&    info = get_coin_info(ticker);
+        if (not info.is_claimable)
         {
-            ec = not info.is_claimable ? dextop_error::ticker_is_not_claimable : dextop_error::claim_not_enough_funds;
+            ec = dextop_error::ticker_is_not_claimable;
             return {};
         }
         t_withdraw_request req{.coin = ticker, .to = m_balance_informations.at(ticker).address, .amount = "0", .max = true};
         auto               answer = ::mm2::api::rpc_withdraw(std::move(req));
-        return answer;
+        if (answer.rpc_result_code == 200)
+        {
+            out["withdraw_answer"]            = nlohmann::json::parse(answer.raw_result);
+            out.at("withdraw_answer")["date"] = answer.result.value().timestamp_as_date;
+            out["kmd_rewards_info"]           = ::mm2::api::rpc_kmd_rewards_info().result;
+        }
+        return out;
     }
 
     t_broadcast_answer
@@ -1067,13 +1097,13 @@ namespace atomic_dex
         spdlog::debug("{} l{} f[{}]", __FUNCTION__, __LINE__, fs::path(__FILE__).filename().string());
         auto ticker   = req.coin;
         auto b_answer = mm2::broadcast(std::move(req), ec);
-        if (!ec)
+        /*if (!ec)
         {
             auto          lock_claim_file_path = fs::temp_directory_path() / (ticker + ".claim.lock");
             std::ofstream ofs(lock_claim_file_path.string());
             assert(ofs);
             spdlog::info("created file {}", lock_claim_file_path.string());
-        }
+        }*/
         return b_answer;
     }
 
@@ -1138,5 +1168,11 @@ namespace atomic_dex
             return out;
         }
         return nlohmann::json::object();
+    }
+
+    mm2::t_pair_max_vol
+    mm2::get_taker_vol() const noexcept
+    {
+        return m_synchronized_max_taker_vol.value();
     }
 } // namespace atomic_dex

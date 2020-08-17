@@ -1,4 +1,4 @@
-import QtQuick 2.12
+import QtQuick 2.14
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 import Qt.labs.platform 1.0
@@ -16,7 +16,18 @@ FloatingBackground {
     }
 
     function showApp() {
-        window.show()
+        switch(window.true_visibility) {
+            case 4:
+                window.showMaximized()
+                break
+            case 5:
+                window.showFullScreen()
+                break
+            default:
+                window.show()
+                break
+        }
+
         window.raise()
         window.requestActivate()
     }
@@ -69,7 +80,7 @@ FloatingBackground {
     }
 
     function displayMessage(title, message) {
-        if(General.enable_desktop_notifications)
+        if(API.get().settings_pg.notification_enabled)
             tray.showMessage(title, message)
     }
 

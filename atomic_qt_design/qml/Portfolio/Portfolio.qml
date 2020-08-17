@@ -1,4 +1,4 @@
-import QtQuick 2.12
+import QtQuick 2.14
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 
@@ -217,33 +217,9 @@ ColumnLayout {
         }
     }
 
-    // Transactions or loading
-    Item {
-        id: loading
-        visible: API.get().portfolio_mdl.length === 0
-        Layout.alignment: Qt.AlignCenter
-        Layout.fillWidth: true
-        Layout.fillHeight: true
-
-        ColumnLayout {
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            DefaultText {
-                text_value: API.get().settings_pg.empty_string + (qsTr("Loading"))
-                Layout.alignment: Qt.AlignHCenter
-                font.pixelSize: Style.textSize2
-            }
-
-            DefaultBusyIndicator {
-                Layout.alignment: Qt.AlignHCenter
-            }
-        }
-    }
-
     // List
     DefaultListView {
         id: list
-        visible: API.get().portfolio_mdl.length > 0
         Layout.alignment: Qt.AlignTop
         Layout.fillWidth: true
         Layout.fillHeight: true

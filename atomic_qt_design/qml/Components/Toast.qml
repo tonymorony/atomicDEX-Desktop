@@ -1,7 +1,7 @@
 // This is a modified version of QML Toast Implementation of jonmcclung
 // https://gist.github.com/jonmcclung/bae669101d17b103e94790341301c129
 
-import QtQuick 2.12
+import QtQuick 2.14
 import "../Constants"
 
 Rectangle {
@@ -50,7 +50,7 @@ Rectangle {
             margins: margin / 2
         }
         font.pixelSize: Style.textSizeSmall2
-        text_value: title + (details !== undefined && details !== "" ? (" - " + qsTr("Click here to see the details")) : "")
+        text_value: title + (General.isFilled(details) ? (" - " + qsTr("Click here to see the details")) : "")
     }
 
     SequentialAnimation on opacity {
