@@ -127,7 +127,6 @@ Item {
             y: parent.width * 0.25
             transformOrigin: Item.Center
             height: 85
-            fillMode: Image.PreserveAspectFit
         }
 
         Separator {

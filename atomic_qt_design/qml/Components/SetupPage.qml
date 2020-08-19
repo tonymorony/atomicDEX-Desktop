@@ -23,7 +23,6 @@ Item {
             id: image
             Layout.maximumWidth: 300
             Layout.maximumHeight: Layout.maximumWidth * paintedHeight/paintedWidth
-            fillMode: Image.PreserveAspectFit
 
             Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
             antialiasing: true
