@@ -21,9 +21,6 @@
 #include <QString>
 #include <QVector>
 
-//! PCH Header
-#include "atomic.dex.pch.hpp"
-
 //! Project headers
 #include "atomic.dex.mm2.hpp"
 #include "atomic.dex.provider.coinpaprika.hpp"
@@ -55,7 +52,7 @@ namespace atomic_dex
 
       private:
         //! Typedef
-        using t_portfolio_datas = QVector<portfolio_data>;
+        using t_portfolio_datas = boost::synchronized_value<QVector<portfolio_data>>;
 
       public:
         //! Constructor / Destructor

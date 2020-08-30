@@ -16,17 +16,36 @@
 
 #pragma once
 
-//! PCH Headers
-#include "atomic.dex.pch.hpp"
-
 //! Project Headers
 #include "atomic.dex.coins.config.hpp"
 
 namespace mm2::api
 {
-    inline constexpr const char* g_endpoint = "http://127.0.0.1:7783";
+    inline constexpr const char*                           g_endpoint                 = "http://127.0.0.1:7783";
+    inline constexpr const char*                           g_etherscan_proxy_endpoint = "https://komodo.live:3334";
+    inline std::unique_ptr<web::http::client::http_client> g_mm2_http_client{nullptr};
+    inline std::unique_ptr<web::http::client::http_client> g_etherscan_proxy_http_client{
+        std::make_unique<web::http::client::http_client>(FROM_STD_STR(g_etherscan_proxy_endpoint))};
 
-    nlohmann::json rpc_batch_standalone(nlohmann::json batch_array);
+    static inline void
+    create_mm2_httpclient()
+    {
+        web::http::client::http_client_config cfg;
+        using namespace std::chrono_literals;
+        cfg.set_timeout(3s);
+        g_mm2_http_client = std::make_unique<web::http::client::http_client>(FROM_STD_STR(g_endpoint), cfg);
+    }
+
+    static inline void
+    reset_client()
+    {
+        // g_mm2_http_client->
+        // g_mm2_http_client = nullptr;
+    }
+
+    nlohmann::json                       rpc_batch_standalone(nlohmann::json batch_array);
+    pplx::task<web::http::http_response> async_rpc_batch_standalone(nlohmann::json batch_array);
+    nlohmann::json                       basic_batch_answer(const web::http::http_response& resp);
 
     std::string rpc_version();
 
@@ -706,12 +725,64 @@ namespace mm2::api
     nlohmann::json rpc_batch_electrum(std::vector<electrum_request> requests);
     nlohmann::json rpc_batch_enable(std::vector<enable_request> requests);
 
-    template <typename RpcReturnType>
-    static RpcReturnType rpc_process_answer(const RestClient::Response& resp, const std::string& rpc_command) noexcept;
+    template <typename T>
+    using have_error_field = decltype(std::declval<T&>().error.has_value());
 
     template <typename RpcReturnType>
-    RpcReturnType
-    static inline rpc_process_answer_batch(nlohmann::json& json_answer, const std::string& rpc_command) noexcept
+    RpcReturnType static inline rpc_process_answer(const web::http::http_response& resp, const std::string& rpc_command) noexcept
+    {
+        std::string body = TO_STD_STR(resp.extract_string(true).get());
+        spdlog::info("resp code for rpc_command {} is {}", rpc_command, resp.status_code());
+        RpcReturnType answer;
+
+        try
+        {
+            if (resp.status_code() not_eq 200)
+            {
+                spdlog::warn("rpc answer code is not 200, body : {}", body);
+                if constexpr (doom::meta::is_detected_v<have_error_field, RpcReturnType>)
+                {
+                    spdlog::debug("error field detected inside the RpcReturnType");
+                    if constexpr (std::is_same_v<std::optional<std::string>, decltype(answer.error)>)
+                    {
+                        spdlog::debug("The error field type is string, parsing it from the response body");
+                        if (auto json_data = nlohmann::json::parse(body); json_data.at("error").is_string())
+                        {
+                            answer.error = json_data.at("error").get<std::string>();
+                        }
+                        else
+                        {
+                            answer.error = body;
+                        }
+                        spdlog::debug("The error after getting extracted is: {}", answer.error.value());
+                    }
+                }
+                answer.rpc_result_code = resp.status_code();
+                answer.raw_result      = body;
+                return answer;
+            }
+
+
+            assert(not body.empty());
+            auto json_answer       = nlohmann::json::parse(body);
+            answer.rpc_result_code = resp.status_code();
+            answer.raw_result      = body;
+            from_json(json_answer, answer);
+        }
+        catch (const std::exception& error)
+        {
+            spdlog::error(
+                "{} l{} f[{}], exception caught {} for rpc {}, body: {}", __FUNCTION__, __LINE__, fs::path(__FILE__).filename().string(), error.what(),
+                rpc_command, body);
+            answer.rpc_result_code = -1;
+            answer.raw_result      = error.what();
+        }
+
+        return answer;
+    }
+
+    template <typename RpcReturnType>
+    RpcReturnType static inline rpc_process_answer_batch(nlohmann::json& json_answer, const std::string& rpc_command) noexcept
     {
         RpcReturnType answer;
 
@@ -729,6 +800,32 @@ namespace mm2::api
         }
 
         return answer;
+    }
+
+    static inline pplx::task<web::http::http_response>
+    async_process_rpc_get(std::string rpc_command, const std::string& url)
+    {
+        spdlog::info("Processing rpc call: {}, url: {}, endpoint: {}", rpc_command, url, g_etherscan_proxy_endpoint);
+
+        web::http::http_request request;
+        request.set_method(web::http::methods::GET);
+        request.set_request_uri(FROM_STD_STR(url));
+        return g_etherscan_proxy_http_client->request(request);
+    }
+
+    template <typename TAnswer>
+    TAnswer
+    process_rpc_get(std::string rpc_command, const std::string& url)
+    {
+        spdlog::info("Processing rpc call: {}, url: {}, endpoint: {}", rpc_command, url, g_etherscan_proxy_endpoint);
+
+        web::http::http_request request;
+        request.set_method(web::http::methods::GET);
+        request.set_request_uri(url);
+        auto resp = g_etherscan_proxy_http_client->request(request).get();
+        // auto resp = RestClient::get(g_etherscan_proxy_endpoint + url);
+
+        return rpc_process_answer<TAnswer>(resp, rpc_command);
     }
 
     nlohmann::json template_request(std::string method_name) noexcept;

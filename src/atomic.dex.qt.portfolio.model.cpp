@@ -14,11 +14,14 @@
  *                                                                            *
  ******************************************************************************/
 
+#include <taskflow/taskflow.hpp>
+
+//! PCH
+#include "atomic.dex.pch.hpp"
+
 //! Project Headers
-#include <QQmlEngine>
 #include "atomic.dex.qt.portfolio.model.hpp"
 #include "atomic.dex.qt.utilities.hpp"
-#include "atomic.threadpool.hpp"
 
 //! Utils
 namespace
@@ -47,9 +50,6 @@ namespace atomic_dex
         this->m_model_proxy->sort_by_currency_balance(false);
         this->m_model_proxy->setFilterRole(NameRole);
         this->m_model_proxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
-
-        //QQmlEngine::setObjectOwnership(m_model_proxy, QQmlEngine::JavaScriptOwnership);
-        //emit portfolioProxyChanged();
     }
 
     portfolio_model::~portfolio_model() noexcept
@@ -57,7 +57,7 @@ namespace atomic_dex
         m_dispatcher.sink<update_portfolio_values>().disconnect<&portfolio_model::on_update_portfolio_values_event>(*this);
         spdlog::trace("{} l{} f[{}]", __FUNCTION__, __LINE__, fs::path(__FILE__).filename().string());
         spdlog::trace("portfolio model destroyed");
-        //delete m_model_proxy;
+        // delete m_model_proxy;
     }
 
     void
@@ -68,7 +68,8 @@ namespace atomic_dex
         const auto& paprika    = this->m_system_manager.get_system<coinpaprika_provider>();
         auto        coin       = mm2_system.get_coin_info(ticker);
 
-        beginInsertRows(QModelIndex(), this->m_model_data.count(), this->m_model_data.count());
+        auto count = this->m_model_data->count();
+        beginInsertRows(QModelIndex(), count, count);
         std::error_code ec;
         const QString   change_24h = retrieve_change_24h(paprika, coin, *m_config);
         portfolio_data  data{
@@ -85,7 +86,7 @@ namespace atomic_dex
         spdlog::trace(
             "inserting ticker {} with name {} balance {} main currency balance {}", coin.ticker, coin.name, data.balance.toStdString(),
             data.main_currency_balance.toStdString());
-        this->m_model_data.push_back(std::move(data));
+        this->m_model_data->push_back(std::move(data));
         endInsertRows();
         spdlog::trace("size of the portfolio {}", this->get_length());
         emit lengthChanged();
@@ -94,14 +95,15 @@ namespace atomic_dex
     void
     portfolio_model::update_currency_values()
     {
-        const auto&                    mm2_system = this->m_system_manager.get_system<mm2>();
-        const auto&                    paprika    = this->m_system_manager.get_system<coinpaprika_provider>();
-        t_coins                        coins      = mm2_system.get_enabled_coins();
-        const std::string&             currency   = m_config->current_currency;
-        std::vector<std::future<void>> pending_tasks;
+        const auto&        mm2_system = this->m_system_manager.get_system<mm2>();
+        const auto&        paprika    = this->m_system_manager.get_system<coinpaprika_provider>();
+        t_coins            coins      = mm2_system.get_enabled_coins();
+        const std::string& currency   = m_config->current_currency;
+        tf::Executor       executor;
+        tf::Taskflow       taskflow;
         for (auto&& coin: coins)
         {
-            pending_tasks.push_back(spawn([coin, &paprika, &mm2_system, currency, this]() {
+            auto update_functor = [coin, &paprika, &mm2_system, currency, this]() {
                 const std::string& ticker = coin.ticker;
                 if (const auto res = this->match(this->index(0, 0), TickerRole, QString::fromStdString(ticker)); not res.isEmpty())
                 {
@@ -118,9 +120,10 @@ namespace atomic_dex
                     const QString display = QString::fromStdString(coin.ticker) + " (" + balance + ")";
                     update_value(Display, display, idx, *this);
                 }
-            }));
+            };
+            taskflow.emplace(update_functor);
         }
-        for (auto&& cur_task: pending_tasks) { cur_task.wait(); }
+        executor.run(taskflow).wait();
     }
 
     void
@@ -152,7 +155,7 @@ namespace atomic_dex
             return {};
         }
 
-        const portfolio_data& item = m_model_data.at(index.row());
+        const portfolio_data& item = m_model_data->at(index.row());
         switch (static_cast<PortfolioRoles>(role))
         {
         case TickerRole:
@@ -185,7 +188,7 @@ namespace atomic_dex
             return false;
         }
 
-        portfolio_data& item = m_model_data[index.row()];
+        portfolio_data& item = m_model_data->operator[](index.row());
         switch (static_cast<PortfolioRoles>(role))
         {
         case BalanceRole:
@@ -225,7 +228,7 @@ namespace atomic_dex
         beginRemoveRows(QModelIndex(), position, position + rows - 1);
         for (int row = 0; row < rows; ++row)
         {
-            this->m_model_data.removeAt(position);
+            this->m_model_data->removeAt(position);
             emit lengthChanged();
         }
         endRemoveRows();
@@ -247,7 +250,7 @@ namespace atomic_dex
     int
     atomic_dex::portfolio_model::rowCount([[maybe_unused]] const QModelIndex& parent) const
     {
-        return this->m_model_data.count();
+        return this->m_model_data->count();
     }
 
     QHash<int, QByteArray>
@@ -288,7 +291,7 @@ namespace atomic_dex
     portfolio_model::reset()
     {
         this->beginResetModel();
-        this->m_model_data.clear();
+        this->m_model_data->clear();
         this->endResetModel();
     }
 } // namespace atomic_dex

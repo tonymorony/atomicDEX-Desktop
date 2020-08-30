@@ -14,6 +14,9 @@
  *                                                                            *
  ******************************************************************************/
 
+//! PCH
+#include "atomic.dex.pch.hpp"
+
 #include <QDebug>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -48,7 +51,6 @@
 #include "atomic.dex.update.service.hpp"
 #include "atomic.dex.utilities.hpp"
 #include "atomic.dex.version.hpp"
-#include "atomic.threadpool.hpp"
 
 namespace
 {
@@ -201,9 +203,10 @@ namespace atomic_dex
 
             system_manager_.create_system<coinpaprika_provider>(mm2_s, system_manager_.get_system<settings_page>().get_cfg());
             system_manager_.create_system<cex_prices_provider>(mm2_s);
-            //auto& portfolio_system = system_manager_.create_system<portfolio_page>(system_manager_, dispatcher_, this);
-            //portfolio_system.get_portfolio()->set_cfg(system_manager_.get_system<settings_page>().get_cfg());
-            //system_manager_.create_system<trading_page>(system_manager_, m_event_actions.at(events_action::about_to_exit_app), system_manager_.get_system<portfolio_page>().get_portfolio(), this);
+            // auto& portfolio_system = system_manager_.create_system<portfolio_page>(system_manager_, dispatcher_, this);
+            // portfolio_system.get_portfolio()->set_cfg(system_manager_.get_system<settings_page>().get_cfg());
+            // system_manager_.create_system<trading_page>(system_manager_, m_event_actions.at(events_action::about_to_exit_app),
+            // system_manager_.get_system<portfolio_page>().get_portfolio(), this);
 
 
             connect_signals();
@@ -213,7 +216,6 @@ namespace atomic_dex
         auto& paprika = get_paprika();
         if (mm2.is_mm2_running())
         {
-
             std::error_code ec;
             const auto&     config           = system_manager_.get_system<settings_page>().get_cfg();
             auto            fiat_balance_std = paprika.get_price_in_fiat_all(config.current_currency, ec);
@@ -233,7 +235,8 @@ namespace atomic_dex
         system_manager_.get_system<trading_page>().process_action();
         while (not this->m_actions_queue.empty())
         {
-            if (m_event_actions[events_action::about_to_exit_app]) break;
+            if (m_event_actions[events_action::about_to_exit_app])
+                break;
             action last_action;
             this->m_actions_queue.pop(last_action);
             switch (last_action)
@@ -387,14 +390,15 @@ namespace atomic_dex
         //! MM2 system need to be created before the GUI and give the instance to the gui
         auto& mm2_system           = system_manager_.create_system<mm2>();
         auto& settings_page_system = system_manager_.create_system<settings_page>(m_app, this);
-        auto& portfolio_system = system_manager_.create_system<portfolio_page>(system_manager_, dispatcher_, this);
+        auto& portfolio_system     = system_manager_.create_system<portfolio_page>(system_manager_, dispatcher_, this);
         portfolio_system.get_portfolio()->set_cfg(settings_page_system.get_cfg());
-        //get_portfolio()->set_cfg(settings_page_system.get_cfg());
+        // get_portfolio()->set_cfg(settings_page_system.get_cfg());
 
         system_manager_.create_system<coinpaprika_provider>(mm2_system, settings_page_system.get_cfg());
         system_manager_.create_system<cex_prices_provider>(mm2_system);
         system_manager_.create_system<update_system_service>();
-        system_manager_.create_system<trading_page>(system_manager_, m_event_actions.at(events_action::about_to_exit_app), portfolio_system.get_portfolio(), this);
+        system_manager_.create_system<trading_page>(
+            system_manager_, m_event_actions.at(events_action::about_to_exit_app), portfolio_system.get_portfolio(), this);
 
         connect_signals();
         if (is_there_a_default_wallet())
@@ -457,6 +461,10 @@ namespace atomic_dex
     application::on_change_ticker_event([[maybe_unused]] const change_ticker_event& evt) noexcept
     {
         spdlog::debug("{} l{}", __FUNCTION__, __LINE__);
+        if (get_mm2().get_coin_info(evt.ticker).is_erc_20)
+        {
+            get_mm2().fetch_infos_thread(false);
+        }
         if (not m_event_actions[events_action::about_to_exit_app])
         {
             this->m_actions_queue.push(action::refresh_current_ticker);
@@ -476,13 +484,24 @@ namespace atomic_dex
     {
         atomic_dex::t_withdraw_request req{
             .coin = m_coin_info->get_ticker().toStdString(), .to = address.toStdString(), .amount = amount.toStdString(), .max = max};
+
         if (req.max)
         {
             req.amount = "0";
         }
+
         std::error_code ec;
-        auto            answer = mm2::withdraw(std::move(req), ec);
-        auto            coin   = get_mm2().get_coin_info(m_coin_info->get_ticker().toStdString());
+
+        //! If we are in fake pin enabled, we don't want mm2 to choose the max for us
+        if (get_mm2().is_pin_cfg_enabled() && req.max)
+        {
+            spdlog::trace("pin cfg enabled, using another balance");
+            req.amount = get_formated_float(get_mm2().get_balance(m_coin_info->get_ticker().toStdString()));
+            req.max    = false;
+        }
+
+        auto answer = mm2::withdraw(std::move(req), ec);
+        auto coin   = get_mm2().get_coin_info(m_coin_info->get_ticker().toStdString());
         return to_qt_binding(std::move(answer), this, QString::fromStdString(coin.explorer_url[0]));
     }
 
@@ -519,11 +538,19 @@ namespace atomic_dex
     }
 
     QString
-    application::send(const QString& tx_hex)
+    application::send(const QString& tx_hex, bool is_max, const QString& amount)
     {
         atomic_dex::t_broadcast_request req{.tx_hex = tx_hex.toStdString(), .coin = m_coin_info->get_ticker().toStdString()};
         std::error_code                 ec;
         auto                            answer = get_mm2().broadcast(std::move(req), ec);
+        if (get_mm2().is_pin_cfg_enabled() && is_max)
+        {
+            get_mm2().reset_fake_balance_to_zero(m_coin_info->get_ticker().toStdString());
+        }
+        else if (get_mm2().is_pin_cfg_enabled() && not is_max)
+        {
+            get_mm2().decrease_fake_balance(m_coin_info->get_ticker().toStdString(), amount.toStdString());
+        }
         if (not m_event_actions[events_action::about_to_exit_app])
         {
             this->m_actions_queue.push(action::refresh_current_ticker);
@@ -628,17 +655,14 @@ namespace atomic_dex
     application::refresh_infos()
     {
         auto& mm2 = get_mm2();
-        spawn([&mm2]() { mm2.fetch_infos_thread(); });
+        mm2.fetch_infos_thread();
     }
 
     void
     application::refresh_orders_and_swaps()
     {
         auto& mm2 = get_mm2();
-        spawn([&mm2]() {
-            mm2.process_swaps();
-            mm2.process_orders();
-        });
+        mm2.batch_fetch_orders_and_swap();
     }
 
     QVariant
@@ -1057,6 +1081,18 @@ namespace atomic_dex
 //! Wallet manager QML API
 namespace atomic_dex
 {
+    bool
+    application::is_pin_cfg_enabled() const noexcept
+    {
+        return get_mm2().is_pin_cfg_enabled();
+    }
+
+    void
+    application::set_emergency_password(const QString& emergency_password)
+    {
+        m_wallet_manager.set_emergency_password(emergency_password);
+    }
+
     QString
     application::get_wallet_default_name() const noexcept
     {
@@ -1077,12 +1113,12 @@ namespace atomic_dex
     }
 
     bool
-    application::login(const QString& password, const QString& wallet_name, bool with_pin_cfg)
+    application::login(const QString& password, const QString& wallet_name)
     {
         bool res = m_wallet_manager.login(password, wallet_name, get_mm2(), [this, &wallet_name]() {
             this->set_wallet_default_name(wallet_name);
             this->set_status("initializing_mm2");
-        }, with_pin_cfg);
+        });
         if (res)
         {
             addressbook_model* addressbook = qobject_cast<addressbook_model*>(m_manager_models.at("addressbook"));
@@ -1172,7 +1208,7 @@ namespace atomic_dex
             m_coin_info->set_explorer_url(QString::fromStdString(info.explorer_url[0]));
             std::error_code ec;
             const auto&     config = system_manager_.get_system<settings_page>().get_cfg();
-            auto price = QString::fromStdString(paprika.get_rate_conversion(config.current_currency, ticker, ec, true));
+            auto            price  = QString::fromStdString(paprika.get_rate_conversion(config.current_currency, ticker, ec, true));
             spdlog::trace("price to be set: {}", price.toStdString());
             m_coin_info->set_price(price);
             m_coin_info->set_change24h(retrieve_change_24h(paprika, info, config));

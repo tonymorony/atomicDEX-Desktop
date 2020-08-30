@@ -37,6 +37,38 @@ namespace
             answer.result = j.at("result").get<RpcSuccessReturnType>();
         }
     }
+
+    template <typename TRequestCollections>
+    nlohmann::json
+    batch_enabling(const std::string& method, TRequestCollections requests)
+    {
+        spdlog::info("Processing rpc call: batch {}", method);
+
+        nlohmann::json req_json_data = nlohmann::json::array();
+        for (auto&& request: requests)
+        {
+            nlohmann::json json_data = ::mm2::api::template_request(method);
+            to_json(json_data, request);
+            req_json_data.push_back(json_data);
+        }
+
+        // auto resp = mm2::api::get_client()->post("", req_json_data.dump());
+        auto resp = RestClient::post(mm2::api::g_endpoint, "application/json", req_json_data.dump());
+
+        spdlog::info("{} resp code: {}", __FUNCTION__, resp.code);
+
+        nlohmann::json answer;
+        try
+        {
+            answer = nlohmann::json::parse(resp.body);
+        }
+        catch (const nlohmann::detail::parse_error& err)
+        {
+            spdlog::error("{}", err.what());
+            answer["error"] = resp.body;
+        }
+        return answer;
+    }
 } // namespace
 
 //! Implementation RPC [max_taker_vol]
@@ -277,12 +309,21 @@ namespace mm2::api
     void
     from_json(const nlohmann::json& j, tx_history_answer_success& answer)
     {
-        if (not j.at("from_id").is_null())
-            j.at("from_id").get_to(answer.from_id);
-        j.at("current_block").get_to(answer.current_block);
+        if (j.contains("from_id"))
+        {
+            if (not j.at("from_id").is_null())
+                j.at("from_id").get_to(answer.from_id);
+        }
+        if (j.contains("current_block"))
+        {
+            j.at("current_block").get_to(answer.current_block);
+        }
         j.at("limit").get_to(answer.limit);
         j.at("skipped").get_to(answer.skipped);
-        j.at("sync_status").get_to(answer.sync_status);
+        if (j.contains("sync_status"))
+        {
+            j.at("sync_status").get_to(answer.sync_status);
+        }
         j.at("total").get_to(answer.total);
         j.at("transactions").get_to(answer.transactions);
     }
@@ -858,61 +899,6 @@ namespace mm2::api
         }
     }
 
-    template <typename T>
-    using have_error_field = decltype(std::declval<T&>().error.has_value());
-
-    template <typename RpcReturnType>
-    RpcReturnType
-    rpc_process_answer(const RestClient::Response& resp, const std::string& rpc_command) noexcept
-    {
-        spdlog::info("resp code for rpc_command {} is {}", rpc_command, resp.code);
-
-        RpcReturnType answer;
-        try
-        {
-            if (resp.code not_eq 200)
-            {
-                spdlog::warn("rpc answer code is not 200, body : {}", resp.body);
-                if constexpr (doom::meta::is_detected_v<have_error_field, RpcReturnType>)
-                {
-                    spdlog::debug("error field detected inside the RpcReturnType");
-                    if constexpr (std::is_same_v<std::optional<std::string>, decltype(answer.error)>)
-                    {
-                        spdlog::debug("The error field type is string, parsing it from the response body");
-                        if (auto json_data = nlohmann::json::parse(resp.body); json_data.at("error").is_string())
-                        {
-                            answer.error = json_data.at("error").get<std::string>();
-                        }
-                        else
-                        {
-                            answer.error = resp.body;
-                        }
-                        spdlog::debug("The error after getting extracted is: {}", answer.error.value());
-                    }
-                }
-                answer.rpc_result_code = resp.code;
-                answer.raw_result      = resp.body;
-                return answer;
-            }
-
-
-            auto json_answer       = nlohmann::json::parse(resp.body);
-            answer.rpc_result_code = resp.code;
-            answer.raw_result      = resp.body;
-            from_json(json_answer, answer);
-        }
-        catch (const std::exception& error)
-        {
-            spdlog::error(
-                "{} l{} f[{}], exception caught {} for rpc {}", __FUNCTION__, __LINE__, fs::path(__FILE__).filename().string(), error.what(), rpc_command);
-            answer.rpc_result_code = -1;
-            answer.raw_result      = error.what();
-        }
-
-        return answer;
-    }
-
-
     my_recent_swaps_answer
     rpc_my_recent_swaps(my_recent_swaps_request&& request)
     {
@@ -1010,14 +996,21 @@ namespace mm2::api
     my_orders_answer
     rpc_my_orders() noexcept
     {
-        nlohmann::json       json_data = template_request("my_orders");
-        RestClient::Response resp;
+        nlohmann::json json_data = template_request("my_orders");
 
         spdlog::info("Processing rpc call: rpc my_orders");
 
-        resp = RestClient::post(g_endpoint, "application/json", json_data.dump());
 
-        return rpc_process_answer<my_orders_answer>(resp, "my_orders");
+        if (g_mm2_http_client != nullptr)
+        {
+            web::http::http_request request(web::http::methods::POST);
+            request.headers().set_content_type(FROM_STD_STR("application/json"));
+            request.set_body(json_data.dump());
+            auto resp = g_mm2_http_client->request(request).get();
+            return rpc_process_answer<my_orders_answer>(resp, "my_orders");
+        }
+
+        return {};
     }
 
     template <typename TRequest, typename TAnswer>
@@ -1026,18 +1019,24 @@ namespace mm2::api
     {
         spdlog::info("Processing rpc call: {}", rpc_command);
 
-        nlohmann::json       json_data = template_request(rpc_command);
-        RestClient::Response resp;
+        nlohmann::json json_data = template_request(rpc_command);
 
         to_json(json_data, request);
 
         auto json_copy        = json_data;
         json_copy["userpass"] = "*******";
-        spdlog::debug("request: {}", json_copy.dump());
+        spdlog::trace("request: {}", json_copy.dump());
 
-        resp = RestClient::post(g_endpoint, "application/json", json_data.dump());
+        if (g_mm2_http_client != nullptr)
+        {
+            web::http::http_request request(web::http::methods::POST);
+            request.headers().set_content_type(FROM_STD_STR("application/json"));
+            request.set_body(json_data.dump());
+            auto resp = g_mm2_http_client->request(request).get();
+            return rpc_process_answer<TAnswer>(resp, rpc_command);
+        }
 
-        return rpc_process_answer<TAnswer>(resp, rpc_command);
+        return TAnswer{};
     }
 
     nlohmann::json
@@ -1058,6 +1057,7 @@ namespace mm2::api
         json_copy["userpass"] = "*******";
         spdlog::debug("{} request: {}", __FUNCTION__, json_copy.dump());
 
+        // resp = get_client()->post("", json_data.dump());
         resp = RestClient::post(g_endpoint, "application/json", json_data.dump());
         if (resp.code == 200)
         {
@@ -1073,58 +1073,94 @@ namespace mm2::api
         spdlog::info("Processing rpc call: kmd_rewards_info");
         kmd_rewards_info_answer out;
 
-        nlohmann::json       json_data = template_request("kmd_rewards_info");
-        RestClient::Response resp;
+        nlohmann::json json_data = template_request("kmd_rewards_info");
 
         auto json_copy        = json_data;
         json_copy["userpass"] = "*******";
         spdlog::debug("{} request: {}", __FUNCTION__, json_copy.dump());
 
-        resp                = RestClient::post(g_endpoint, "application/json", json_data.dump());
-        out.rpc_result_code = resp.code;
-        out.result          = nlohmann::json::parse(resp.body);
-        if (resp.code == 200)
+        // auto resp = RestClient::post(g_endpoint, "application/json", json_data.dump());
+        // auto resp                                        = get_client()->post("", json_data.dump());
+        web::http::http_request request;
+        request.set_method(web::http::methods::POST);
+        request.set_body(json_data.dump());
+        auto resp                                        = g_mm2_http_client->request(request).get();
+        out.rpc_result_code                              = resp.status_code();
+        out.result                                       = nlohmann::json::parse(TO_STD_STR(resp.extract_string(true).get()));
+        auto transform_timestamp_into_human_date_functor = [](nlohmann::json& obj, const std::string& field) {
+            if (obj.contains(field))
+            {
+                auto obj_timestamp         = obj.at(field).get<std::size_t>();
+                obj[field + "_human_date"] = to_human_date<std::chrono::seconds>(obj_timestamp, "%e %b %Y, %H:%M");
+            }
+        };
+
+        if (resp.status_code() == 200)
         {
             for (auto&& obj: out.result.at("result"))
             {
-                if (obj.contains("accrue_start_at"))
-                {
-                    auto accrue_timestamp             = obj.at("accrue_start_at").get<std::size_t>();
-                    obj["accrue_start_at_human_date"] = to_human_date<std::chrono::seconds>(accrue_timestamp, "%e %b %Y, %H:%M");
-                }
-
-                if (obj.contains("accrue_stop_at"))
-                {
-                    auto accrue_timestamp            = obj.at("accrue_stop_at").get<std::size_t>();
-                    obj["accrue_stop_at_human_date"] = to_human_date<std::chrono::seconds>(accrue_timestamp, "%e %b %Y, %H:%M");
-                }
-
-                if (obj.contains("locktime"))
-                {
-                    auto locktime_timestamp    = obj.at("locktime").get<std::size_t>();
-                    obj["locktime_human_date"] = to_human_date<std::chrono::seconds>(locktime_timestamp, "%e %b %Y, %H:%M");
-                }
+                for (const auto& field: {"accrue_start_at", "accrue_stop_at", "locktime"}) { transform_timestamp_into_human_date_functor(obj, field); }
             }
         }
         return out;
     }
 
-    nlohmann::json
-    rpc_batch_standalone(nlohmann::json batch_array)
+    pplx::task<web::http::http_response>
+    async_rpc_batch_standalone(nlohmann::json batch_array)
     {
-        auto resp = RestClient::post(g_endpoint, "application/json", batch_array.dump());
+        if (g_mm2_http_client != nullptr)
+        {
+            web::http::http_request request;
+            request.set_method(web::http::methods::POST);
+            request.set_body(batch_array.dump());
+            auto resp = g_mm2_http_client->request(request);
+            return resp;
+        }
+        return {};
+    }
 
-        spdlog::info("{} resp code: {}", __FUNCTION__, resp.code);
+    nlohmann::json
+    basic_batch_answer(const web::http::http_response& resp)
+    {
+        spdlog::info("{} resp code: {}", __FUNCTION__, resp.status_code());
 
         nlohmann::json answer;
+        std::string    body = TO_STD_STR(resp.extract_string(true).get());
         try
         {
-            answer = nlohmann::json::parse(resp.body);
+            answer = nlohmann::json::parse(body);
         }
         catch (const nlohmann::detail::parse_error& err)
         {
-            spdlog::error("{}", err.what());
-            answer["error"] = resp.body;
+            spdlog::error("{}, body: {}", err.what(), body);
+            answer["error"] = body;
+        }
+        return answer;
+    }
+
+    nlohmann::json
+    rpc_batch_standalone(nlohmann::json batch_array)
+    {
+        // auto resp = get_client()->post("", batch_array.dump());
+        web::http::http_request request;
+        request.set_method(web::http::methods::POST);
+        request.set_body(batch_array.dump());
+        auto resp = g_mm2_http_client->request(request).get();
+        // auto resp = RestClient::post(g_endpoint, "application/json", batch_array.dump());
+
+
+        spdlog::info("{} resp code: {}", __FUNCTION__, resp.status_code());
+
+        nlohmann::json answer;
+        std::string    body = TO_STD_STR(resp.extract_string(true).get());
+        try
+        {
+            answer = nlohmann::json::parse(body);
+        }
+        catch (const nlohmann::detail::parse_error& err)
+        {
+            spdlog::error("{}, body: {}", err.what(), body);
+            answer["error"] = body;
         }
         return answer;
     }
@@ -1132,64 +1168,13 @@ namespace mm2::api
     nlohmann::json
     rpc_batch_electrum(std::vector<electrum_request> requests)
     {
-        spdlog::info("Processing rpc call: batch electrum");
-
-        nlohmann::json req_json_data = nlohmann::json::array();
-        for (auto&& request: requests)
-        {
-            nlohmann::json       json_data = template_request("electrum");
-            RestClient::Response resp;
-            to_json(json_data, request);
-            req_json_data.push_back(json_data);
-        }
-
-        auto resp = RestClient::post(g_endpoint, "application/json", req_json_data.dump());
-
-        spdlog::info("{} resp code: {}", __FUNCTION__, resp.code);
-
-        nlohmann::json answer;
-        try
-        {
-            answer = nlohmann::json::parse(resp.body);
-        }
-        catch (const nlohmann::detail::parse_error& err)
-        {
-            spdlog::error("{}", err.what());
-            answer["error"] = resp.body;
-        }
-        return answer;
+        return batch_enabling("electrum", requests);
     }
 
     nlohmann::json
     rpc_batch_enable(std::vector<enable_request> requests)
     {
-        spdlog::info("Processing rpc call: batch enable");
-
-        nlohmann::json req_json_data = nlohmann::json::array();
-        for (auto&& request: requests)
-        {
-            nlohmann::json       json_data = template_request("enable");
-            RestClient::Response resp;
-            to_json(json_data, request);
-            req_json_data.push_back(json_data);
-        }
-
-        auto resp = RestClient::post(g_endpoint, "application/json", req_json_data.dump());
-        spdlog::info("{} resp code: {}", __FUNCTION__, resp.code);
-
-        nlohmann::json answer;
-
-        try
-        {
-            answer = nlohmann::json::parse(resp.body);
-        }
-        catch (const nlohmann::detail::parse_error& err)
-        {
-            spdlog::error("{}", err.what());
-            answer["error"] = resp.body;
-        }
-
-        return answer;
+        return batch_enabling("enable", requests);
     }
 
     static inline std::string&

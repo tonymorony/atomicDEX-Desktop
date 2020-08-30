@@ -16,9 +16,6 @@
 
 #pragma once
 
-//! PCH Headers
-#include "atomic.dex.pch.hpp"
-
 //! Project Headers
 #include "atomic.dex.coins.config.hpp"
 #include "atomic.dex.events.hpp"
@@ -127,17 +124,23 @@ namespace atomic_dex
         //! Refresh the balance registry (internal)
         void process_balance(const std::string& ticker) const;
 
-        //! Refresh the transaction registry (internal)
-        void process_tx(const std::string& ticker);
-
-        //! Refresh the fees registry (internal)
-        // void process_fees();
-
         //! Refresh the orderbook registry (internal)
         void process_orderbook(bool is_a_reset = false);
+        nlohmann::json prepare_batch_orderbook();
 
         //! Batch process fees and fetch current_orderbook thread
         void batch_process_fees_and_fetch_current_orderbook_thread(bool is_a_reset);
+        nlohmann::json prepare_process_fees_and_current_orderbook();
+
+        //! Batch balance / tx
+        std::tuple<nlohmann::json, std::vector<std::string>, std::vector<std::string>> prepare_batch_balance_and_tx() const;
+        auto                                                                           batch_balance_and_tx(bool is_a_reset, std::string ticker = "", bool is_during_enabling = false);
+        void                                                                           process_balance_answer(const nlohmann::json& answer);
+        void process_tx_answer(const nlohmann::json& answer_json, const std::string& ticker);
+        void process_tx_etherscan(const std::string& ticker, bool is_a_refresh);
+
+        //!
+        void process_batch_enable_answer(const nlohmann::json& answer);
 
       public:
         //! Constructor
@@ -166,7 +169,7 @@ namespace atomic_dex
         void spawn_mm2_instance(std::string wallet_name, std::string passphrase, bool with_pin_cfg = false);
 
         //! Refresh the current info (internally call process_balance and process_tx)
-        void fetch_infos_thread();
+        void fetch_infos_thread(bool is_a_fresh = true);
 
         //! Refresh the swaps history
         void process_swaps();
@@ -179,9 +182,6 @@ namespace atomic_dex
 
         //! Enable multiple coins
         void enable_multiple_coins(const std::vector<std::string>& tickers) noexcept;
-
-        //! Enable single coin
-        bool enable_coin(const std::string& ticker, bool emit_event = false);
 
         //! Disable a single coin
         bool disable_coin(const std::string& ticker, std::error_code& ec) noexcept;
@@ -221,9 +221,6 @@ namespace atomic_dex
 
         //! Last 50 transactions maximum
         [[nodiscard]] t_tx_state get_tx_state(const std::string& ticker, t_mm2_ec& ec) const;
-
-        //! Claim Reward is possible on this specific ticker ?
-        //[[nodiscard]] bool is_claiming_ready(const std::string& ticker) const noexcept;
 
         //! Claim rewards
         nlohmann::json claim_rewards(const std::string& ticker, t_mm2_ec& ec) noexcept;
@@ -277,6 +274,13 @@ namespace atomic_dex
         [[nodiscard]] nlohmann::json get_raw_mm2_ticker_cfg(const std::string& ticker) const noexcept;
 
         [[nodiscard]] t_pair_max_vol get_taker_vol() const noexcept;
+
+        //! Pin cfg api
+        [[nodiscard]] bool is_pin_cfg_enabled() const noexcept;
+        void               reset_fake_balance_to_zero(const std::string& ticker) noexcept;
+        void               decrease_fake_balance(const std::string& ticker, const std::string& amount) noexcept;
+        void               batch_fetch_orders_and_swap();
+        void               add_orders_answer(t_my_orders_answer answer);
     };
 } // namespace atomic_dex
 

@@ -14,6 +14,9 @@
  *                                                                            *
  ******************************************************************************/
 
+//!
+#include "atomic.dex.pch.hpp"
+
 //! Project Headers
 #include "atomic.dex.qt.current.coin.infos.hpp"
 #include "atomic.dex.events.hpp"
@@ -59,8 +62,9 @@ namespace atomic_dex
     void
     atomic_dex::current_coin_info::set_ticker(QString ticker) noexcept
     {
+        std::string ticker_std = ticker.toStdString();
         selected_coin_name = std::move(ticker);
-        this->m_dispatcher.trigger<change_ticker_event>();
+        this->m_dispatcher.trigger<change_ticker_event>(ticker_std);
         emit ticker_changed();
     }
 

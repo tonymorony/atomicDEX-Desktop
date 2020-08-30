@@ -8,6 +8,13 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+#find_program(IWYU_PATH NAMES include-what-you-use iwyu)
+#if(NOT IWYU_PATH)
+#    message(FATAL_ERROR "Could not find the program include-what-you-use")
+#endif()
+#set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE ${IWYU_PATH})
+#set(CMAKE_C_INCLUDE_WHAT_YOU_USE ${IWYU_PATH})
+#include_directories("/usr/lib/llvm-10/include/c++/v1/")
 
 
 if (WIN32)
@@ -94,19 +101,16 @@ configure_icon_osx(data/osx/atomicDeFi.icns ICON atomicDeFi.icns)
 ##! End antara
 
 find_package(date CONFIG REQUIRED)
+#find_package(httplib)
 find_package(doctest CONFIG REQUIRED)
 find_package(folly CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
+#find_package(Taskflow CONFIG REQUIRED)
+find_package(cpprestsdk CONFIG REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem random)
 find_package(Qt5 COMPONENTS Core Quick LinguistTools Svg Charts Widgets REQUIRED)
 find_package(unofficial-sodium CONFIG REQUIRED)
-#find_library(unofficial-bitcoin-external bitcoin)
-#find_path(unofficial-btc-headers bitcoin/bitcoin.hpp)
-#message(STATUS "Found libbtc -> ${unofficial-bitcoin-external} ${unofficial-btc-headers}")
 add_library(unofficial-bitcoin INTERFACE)
-#if (APPLE)
-#    target_link_libraries(unofficial-bitcoin INTERFACE ${unofficial-bitcoin-external})
-#    target_include_directories(unofficial-bitcoin INTERFACE ${unofficial-btc-headers})
 if (WIN32)
     target_link_directories(unofficial-bitcoin INTERFACE wally)
     target_link_libraries(unofficial-bitcoin INTERFACE wally)
@@ -206,6 +210,8 @@ target_link_libraries(atomicDeFi_shared_deps
         Folly::folly_deps
         spdlog::spdlog
         spdlog::spdlog_header_only
+        cpprestsdk::cpprest
+        #Taskflow::Taskflow
         )
 
 target_include_directories(atomicDeFi_shared_deps
@@ -254,6 +260,9 @@ set_target_properties(${PROJECT_NAME}_tests
         )
 
 
+if (NOT APPLE)
+    target_precompile_headers(${PROJECT_NAME} PRIVATE src/atomic.dex.pch.hpp)
+endif ()
 #target_enable_tsan(atomicDeFi_tests)
 #target_enable_asan(atomicDeFi)
 
