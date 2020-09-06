@@ -22,11 +22,11 @@
 #include <QVector>
 
 //! Project headers
+#include "atomic.dex.events.hpp"
 #include "atomic.dex.mm2.hpp"
-#include "atomic.dex.provider.coinpaprika.hpp"
+#include "atomic.dex.cfg.hpp"
 #include "atomic.dex.qt.portfolio.data.hpp"
 #include "atomic.dex.qt.portfolio.proxy.filter.model.hpp"
-#include "atomic.dex.events.hpp"
 
 namespace atomic_dex
 {
@@ -52,15 +52,13 @@ namespace atomic_dex
 
       private:
         //! Typedef
-        using t_portfolio_datas = boost::synchronized_value<QVector<portfolio_data>>;
+        using t_portfolio_datas = QVector<portfolio_data>;
+        using t_ticker_registry = std::unordered_set<std::string>;
 
       public:
         //! Constructor / Destructor
         explicit portfolio_model(ag::ecs::system_manager& system_manager, entt::dispatcher& dispatcher, QObject* parent = nullptr) noexcept;
         ~portfolio_model() noexcept final;
-
-        //! Public callback
-        void on_update_portfolio_values_event(const update_portfolio_values&) noexcept;
 
         //! Overrides
         [[nodiscard]] QVariant               data(const QModelIndex& index, int role) const final;
@@ -70,9 +68,9 @@ namespace atomic_dex
         bool                                 removeRows(int row, int count, const QModelIndex& parent) final;
 
         //! Public api
-        void initialize_portfolio(std::string ticker);
+        void initialize_portfolio(const std::vector<std::string>& tickers);
         void update_currency_values();
-        void update_balance_values(const std::string& ticker) noexcept;
+        void update_balance_values(const std::vector<std::string>& tickers) noexcept;
         void disable_coins(const QStringList& coins);
         void set_cfg(atomic_dex::cfg& cfg) noexcept;
 
@@ -96,6 +94,7 @@ namespace atomic_dex
         portfolio_proxy_model* m_model_proxy;
         //! Data holders
         t_portfolio_datas m_model_data;
+        t_ticker_registry m_ticker_registry;
     };
 
 } // namespace atomic_dex

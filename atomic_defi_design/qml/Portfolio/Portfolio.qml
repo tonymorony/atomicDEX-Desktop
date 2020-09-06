@@ -23,9 +23,25 @@ ColumnLayout {
     property int current_sort: sort_by_value
     property bool ascending: false
 
-    function reset() { }
+    function applyCurrentSort() {
+        // Apply the sort
+        switch(current_sort) {
+            case sort_by_name: portfolio_coins.sort_by_name(ascending); break
+            case sort_by_value: portfolio_coins.sort_by_currency_balance(ascending); break
+            case sort_by_price: portfolio_coins.sort_by_currency_unit(ascending); break
+            case sort_by_trend:
+            case sort_by_change: portfolio_coins.sort_by_change_last24h(ascending); break
+        }
+    }
 
-    function onOpened() { }
+    function reset() {
+        input_coin_filter.reset()
+    }
+
+    function onOpened() {
+        // Reset the coin name filter
+        input_coin_filter.reset()
+    }
 
     function updateChart(chart, historical) {
         chart.removeAllSeries()
@@ -79,7 +95,7 @@ ColumnLayout {
             DefaultText {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.bottomMargin: 30
-                text_value: API.get().settings_pg.empty_string + (General.formatFiat("", API.get().balance_fiat_all, API.get().settings_pg.current_currency))
+                text_value: API.get().settings_pg.empty_string + (General.formatFiat("", API.get().portfolio_pg.balance_fiat_all, API.get().settings_pg.current_currency))
                 font.pixelSize: Style.textSize4
                 privacy: true
             }
@@ -113,8 +129,10 @@ ColumnLayout {
             id: input_coin_filter
 
             function reset() {
-                visible = false
-                text = ""
+                if(text === "") resetCoinFilter()
+                else text = ""
+
+                //applyCurrentSort()
             }
 
             anchors.horizontalCenter: add_coin_button.horizontalCenter
@@ -125,7 +143,7 @@ ColumnLayout {
             selectByMouse: true
 
             onTextChanged: {
-                API.get().portfolio_pg.portfolio_mdl.portfolio_proxy_mdl.setFilterFixedString(text)
+                portfolio_coins.setFilterFixedString(text)
             }
 
             width: 120
@@ -240,7 +258,7 @@ ColumnLayout {
                 onClicked: {
                     if (mouse.button === Qt.RightButton) context_menu.popup()
                     else {
-                        API.get().current_coin_info.ticker = ticker
+                        api_wallet_page.ticker = ticker
                         dashboard.current_page = General.idx_dashboard_wallet
                     }
                 }
@@ -305,12 +323,26 @@ ColumnLayout {
 
             // Price
             DefaultText {
+                id: price_value
                 anchors.right: parent.right
                 anchors.rightMargin: price_header.anchors.rightMargin
 
                 text_value: API.get().settings_pg.empty_string + (General.formatFiat('', main_currency_price_for_one_unit, API.get().settings_pg.current_currency))
                 color: Style.colorThemeDarkLight
                 anchors.verticalCenter: parent.verticalCenter
+
+            }
+
+            DefaultImage {
+                visible: API.get().portfolio_pg.oracle_price_supported_pairs.join(",").indexOf(ticker) !== -1
+                source: General.coinIcon('BAND')
+                width: 12
+                height: width
+                anchors.top: price_value.top
+                anchors.left: price_value.right
+                anchors.leftMargin: 5
+
+                CexInfoTrigger {}
             }
 
             // 7d Trend

@@ -29,6 +29,9 @@ Item {
         Qt.openUrlExternally(prefix + API.get().get_log_folder())
     }
 
+    readonly property var api_wallet_page: API.get().wallet_pg
+    readonly property var current_ticker_infos: api_wallet_page.ticker_infos
+
     property int prev_page: -1
     property int current_page: getMainPage()
 
@@ -54,6 +57,10 @@ Item {
     }
 
     property var portfolio_coins: API.get().portfolio_pg.portfolio_mdl.portfolio_proxy_mdl
+
+    function resetCoinFilter() {
+        portfolio_coins.setFilterFixedString("")
+    }
 
     onCurrent_pageChanged: {
         if(prev_page !== current_page) {
@@ -235,23 +242,22 @@ Item {
     // CEX Rates info
     DefaultModal {
         id: cex_rates_modal
-        width: 500
+        width: 900
 
         // Inside modal
         ColumnLayout {
-            width: parent.width
+            width: parent.width - parent.padding
 
             ModalHeader {
-                title: API.get().settings_pg.empty_string + (General.cex_icon + " " + qsTr("CEX Data"))
+                title: API.get().settings_pg.empty_string + (General.cex_icon + " " + qsTr("Market Data"))
             }
 
             DefaultText {
-                text_value: API.get().settings_pg.empty_string + (qsTr('Markets data (prices, charts, etc.) marked with the ⓘ icon originates from third party sources.') + ' (<a href="https://coinpaprika.com">coinpaprika.com</a>)')
+                text_value: API.get().settings_pg.empty_string + (qsTr('Market data (prices, charts, etc.) marked with the ⓘ icon originates from third-party sources.<br><br>Data is sourced via <a href="https://bandprotocol.com/">Band Decentralized Oracle</a> and <a href="https://coinpaprika.com">Coinpaprika</a>.<br><br><b>Oracle Supported Pairs:</b><br>%1<br><br><b>Last reference (Band Oracle):</b><br><a href="%2">%2</a>')
+                                                                    .arg(API.get().portfolio_pg.oracle_price_supported_pairs.join(', '))
+                                                                    .arg(API.get().portfolio_pg.oracle_last_price_reference))
                 wrapMode: Text.WordWrap
                 Layout.preferredWidth: cex_rates_modal.width
-
-                onLinkActivated: Qt.openUrlExternally(link)
-                linkColor: color
             }
         }
     }

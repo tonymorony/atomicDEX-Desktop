@@ -27,8 +27,8 @@
         <file>atomic_defi_design/assets/images/dashboard-eye.svg</file>
         <file>atomic_defi_design/assets/images/dashboard-eye-hide.svg</file>
         <file>atomic_defi_design/assets/images/dashboard-copy.svg</file>
-        <file>atomic_defi_design/assets/images/atomicdefi-logo.svg</file>
-        <file>atomic_defi_design/assets/images/atomicdefi-logo-dark.svg</file>
+        <file>atomic_defi_design/assets/images/atomicdex-logo.svg</file>
+        <file>atomic_defi_design/assets/images/atomicdex-logo-dark.svg</file>
         <file>atomic_defi_design/assets/images/komodo-icon.png</file>
         <file>atomic_defi_design/assets/images/exchange-exchange.svg</file>
         <file>atomic_defi_design/assets/images/exchange-search.svg</file>
@@ -49,6 +49,7 @@
         <file>atomic_defi_design/assets/images/shadowed_circle_blue.svg</file>
         <file>atomic_defi_design/assets/images/coins/awc.png</file>
         <file>atomic_defi_design/assets/images/coins/axe.png</file>
+        <file>atomic_defi_design/assets/images/coins/band.png</file>
         <file>atomic_defi_design/assets/images/coins/bat.png</file>
         <file>atomic_defi_design/assets/images/coins/btc.png</file>
         <file>atomic_defi_design/assets/images/coins/bch.png</file>
@@ -159,9 +160,10 @@
         <file>atomic_defi_design/qml/Components/DefaultInnerShadow.qml</file>
         <file>atomic_defi_design/qml/Components/DefaultButton.qml</file>
         <file>atomic_defi_design/qml/Components/DefaultBusyIndicator.qml</file>
-        <file>atomic_defi_design/qml/Components/DefaultText.qml</file>
         <file>atomic_defi_design/qml/Components/DefaultRectangle.qml</file>
         <file>atomic_defi_design/qml/Components/DefaultScrollBar.qml</file>
+        <file>atomic_defi_design/qml/Components/DefaultText.qml</file>
+        <file>atomic_defi_design/qml/Components/DefaultTextEdit.qml</file>
         <file>atomic_defi_design/qml/Components/DefaultTextField.qml</file>
         <file>atomic_defi_design/qml/Components/DefaultTextArea.qml</file>
         <file>atomic_defi_design/qml/Components/DefaultListView.qml</file>

@@ -18,7 +18,7 @@ RowLayout {
     function onClickedSwap() {
         dashboard.current_page = General.idx_dashboard_exchange
         exchange.current_page = General.idx_exchange_trade
-        exchange.openTradeView(API.get().current_coin_info.ticker)
+        exchange.openTradeView(api_wallet_page.ticker)
     }
 
     function reset() {
@@ -27,7 +27,10 @@ RowLayout {
         enable_coin_modal.reset()
     }
 
-    function onOpened() { }
+    function onOpened() {
+        // Reset the coin name filter
+        sidebar.reset()
+    }
 
     readonly property double button_margin: 0.05
     spacing: 0

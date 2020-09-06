@@ -48,17 +48,17 @@
     </message>
     <message>
         <location filename="../../qml/Settings/CamouflagePasswordModal.qml" line="46"/>
-        <source>Camouflage password is a secret wallet password which can be used in emergency situations.</source>
+        <source>Camouflage Password is a secret password for emergency situations.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../qml/Settings/CamouflagePasswordModal.qml" line="55"/>
-        <source>On login with it balance lower than actual will be displayed.</source>
+        <source>Using it to login will display your balance lower than it actually is.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../qml/Settings/CamouflagePasswordModal.qml" line="63"/>
-        <source>It forming as &lt;your encryption password&gt; + &lt;appendix&gt;.</source>
+        <source>Here you enter the suffix and at login you need to enter {real_password}{suffix}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -88,124 +88,124 @@
 <context>
     <name>ClaimRewardsModal</name>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="68"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="70"/>
         <source>Failed to prepare to claim rewards</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="72"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="74"/>
         <source>Failed to get the rewards info</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="103"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="114"/>
         <source>Claim your %1 reward?</source>
         <comment>TICKER</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="113"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="130"/>
         <source>No UTXOs eligible for claiming</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="114"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="131"/>
         <source>Transaction fee is higher than the reward!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="116"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="133"/>
         <source>You will receive %1</source>
         <comment>AMT TICKER</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="120"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="137"/>
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="128"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="145"/>
         <source>Read more about KMD active users rewards</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="148"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="164"/>
         <source>UTXO</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="163"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="179"/>
         <source>Amount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="179"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="195"/>
         <source>Reward</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="195"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="211"/>
         <source>Accruing Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="211"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="227"/>
         <source>Accruing Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="227"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="243"/>
         <source>Time Left</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="243"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="259"/>
         <source>Error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="369"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="387"/>
         <source>Locktime is not set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="372"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="390"/>
         <source>Locktime is less than the threshold</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="375"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="393"/>
         <source>UTXO height is greater than end of the era</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="378"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="396"/>
         <source>UTXO amount is less than 10</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="381"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="399"/>
         <source>One hour did not pass yet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="384"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="402"/>
         <source>Transaction is in mempool</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="387"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="405"/>
         <source>Unknown problem</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="411"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="429"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="416"/>
+        <location filename="../../qml/Wallet/ClaimRewardsModal.qml" line="434"/>
         <source>Confirm</source>
         <translation type="unfinished"></translation>
     </message>
@@ -244,38 +244,38 @@
     </message>
     <message>
         <location filename="../../qml/Exchange/Trade/ConfirmTradeModal.qml" line="122"/>
-        <location filename="../../qml/Exchange/Trade/ConfirmTradeModal.qml" line="160"/>
+        <location filename="../../qml/Exchange/Trade/ConfirmTradeModal.qml" line="157"/>
         <source>Read more about dPoW</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/ConfirmTradeModal.qml" line="137"/>
+        <location filename="../../qml/Exchange/Trade/ConfirmTradeModal.qml" line="134"/>
         <source>Use custom protection settings for incoming %1 transactions</source>
         <comment>TICKER</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/ConfirmTradeModal.qml" line="154"/>
+        <location filename="../../qml/Exchange/Trade/ConfirmTradeModal.qml" line="151"/>
         <source>Enable Komodo dPoW security</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/ConfirmTradeModal.qml" line="182"/>
+        <location filename="../../qml/Exchange/Trade/ConfirmTradeModal.qml" line="176"/>
         <source>Required Confirmations</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/ConfirmTradeModal.qml" line="218"/>
+        <location filename="../../qml/Exchange/Trade/ConfirmTradeModal.qml" line="212"/>
         <source>Warning, this atomic swap is not dPoW protected!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/ConfirmTradeModal.qml" line="227"/>
+        <location filename="../../qml/Exchange/Trade/ConfirmTradeModal.qml" line="221"/>
         <source>Cancel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/ConfirmTradeModal.qml" line="233"/>
+        <location filename="../../qml/Exchange/Trade/ConfirmTradeModal.qml" line="227"/>
         <source>Confirm</source>
         <translation type="unfinished"></translation>
     </message>
@@ -291,19 +291,19 @@
 <context>
     <name>Dashboard</name>
     <message>
-        <location filename="../../qml/Screens/Dashboard.qml" line="122"/>
-        <location filename="../../qml/Screens/Dashboard.qml" line="133"/>
+        <location filename="../../qml/Screens/Dashboard.qml" line="138"/>
+        <location filename="../../qml/Screens/Dashboard.qml" line="149"/>
         <source>Content for this section will be added later. Stay tuned!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Screens/Dashboard.qml" line="230"/>
-        <source>CEX Data</source>
+        <location filename="../../qml/Screens/Dashboard.qml" line="251"/>
+        <source>Market Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Screens/Dashboard.qml" line="234"/>
-        <source>Markets data (prices, charts, etc.) marked with the ⓘ icon originates from third party sources.</source>
+        <location filename="../../qml/Screens/Dashboard.qml" line="255"/>
+        <source>Market data (prices, charts, etc.) marked with the ⓘ icon originates from third-party sources.&lt;br&gt;&lt;br&gt;Data is sourced via &lt;a href=&quot;https://bandprotocol.com/&quot;&gt;Band Decentralized Oracle&lt;/a&gt; and &lt;a href=&quot;https://coinpaprika.com&quot;&gt;Coinpaprika&lt;/a&gt;.&lt;br&gt;&lt;br&gt;&lt;b&gt;Oracle Supported Pairs:&lt;/b&gt;&lt;br&gt;%1&lt;br&gt;&lt;br&gt;&lt;b&gt;Last reference (Band Oracle):&lt;/b&gt;&lt;br&gt;&lt;a href=&quot;%2&quot;&gt;%2&lt;/a&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -425,16 +425,16 @@
         <location filename="../../qml/Components/EulaModal.qml" line="90"/>
         <source>&lt;h2&gt;This End-User License Agreement (&apos;EULA&apos;) is a legal agreement between you and Komodo Platform.&lt;/h2&gt;
 
-&lt;p&gt;This EULA agreement governs your acquisition and use of our atomicDeFi Pro software (&apos;Software&apos;, &apos;Mobile Application&apos;, &apos;Application&apos; or &apos;App&apos;) directly from Komodo Platform or indirectly through a Komodo Platform authorized entity, reseller or distributor (a &apos;Distributor&apos;).&lt;/p&gt;
-&lt;p&gt;Please read this EULA agreement carefully before completing the installation process and using the atomicDeFi Pro software. It provides a license to use the atomicDeFi Pro software and contains warranty information and liability disclaimers.&lt;/p&gt;
-&lt;p&gt;If you register for the beta program of the atomicDeFi Pro software, this EULA agreement will also govern that trial. By clicking &apos;accept&apos; or installing and/or using the atomicDeFi Pro software, you are confirming your acceptance of the Software and agreeing to become bound by the terms of this EULA agreement.&lt;/p&gt;
+&lt;p&gt;This EULA agreement governs your acquisition and use of our atomicDEX Pro software (&apos;Software&apos;, &apos;Mobile Application&apos;, &apos;Application&apos; or &apos;App&apos;) directly from Komodo Platform or indirectly through a Komodo Platform authorized entity, reseller or distributor (a &apos;Distributor&apos;).&lt;/p&gt;
+&lt;p&gt;Please read this EULA agreement carefully before completing the installation process and using the atomicDEX Pro software. It provides a license to use the atomicDEX Pro software and contains warranty information and liability disclaimers.&lt;/p&gt;
+&lt;p&gt;If you register for the beta program of the atomicDEX Pro software, this EULA agreement will also govern that trial. By clicking &apos;accept&apos; or installing and/or using the atomicDEX Pro software, you are confirming your acceptance of the Software and agreeing to become bound by the terms of this EULA agreement.&lt;/p&gt;
 &lt;p&gt;If you are entering into this EULA agreement on behalf of a company or other legal entity, you represent that you have the authority to bind such entity and its affiliates to these terms and conditions. If you do not have such authority or if you do not agree with the terms and conditions of this EULA agreement, do not install or use the Software, and you must not accept this EULA agreement.&lt;/p&gt;
 &lt;p&gt;This EULA agreement shall apply only to the Software supplied by Komodo Platform herewith regardless of whether other software is referred to or described herein. The terms also apply to any Komodo Platform updates, supplements, Internet-based services, and support services for the Software, unless other terms accompany those items on delivery. If so, those terms apply.&lt;/p&gt;
 
 &lt;h3&gt;License Grant&lt;/h3&gt;
-&lt;p&gt;Komodo Platform hereby grants you a personal, non-transferable, non-exclusive licence to use the atomicDeFi Pro software on your devices in accordance with the terms of this EULA agreement.&lt;/p&gt;
+&lt;p&gt;Komodo Platform hereby grants you a personal, non-transferable, non-exclusive licence to use the atomicDEX Pro software on your devices in accordance with the terms of this EULA agreement.&lt;/p&gt;
 
-&lt;p&gt;You are permitted to load the atomicDeFi Pro software (for example a PC, laptop, mobile or tablet) under your control. You are responsible for ensuring your device meets the minimum security and resource requirements of the atomicDeFi Pro software.&lt;/p&gt;
+&lt;p&gt;You are permitted to load the atomicDEX Pro software (for example a PC, laptop, mobile or tablet) under your control. You are responsible for ensuring your device meets the minimum security and resource requirements of the atomicDEX Pro software.&lt;/p&gt;
 
 &lt;p&gt;&lt;b&gt;You are not permitted to:&lt;/b&gt;&lt;/p&gt;
 &lt;ul&gt;
@@ -649,7 +649,7 @@
 <context>
     <name>General</name>
     <message numerus="yes">
-        <location filename="../../qml/Constants/General.qml" line="96"/>
+        <location filename="../../qml/Constants/General.qml" line="99"/>
         <source>%n day(s)</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -657,7 +657,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../qml/Constants/General.qml" line="106"/>
+        <location filename="../../qml/Constants/General.qml" line="109"/>
         <source>%nd</source>
         <comment>day</comment>
         <translation type="unfinished">
@@ -666,7 +666,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../qml/Constants/General.qml" line="107"/>
+        <location filename="../../qml/Constants/General.qml" line="110"/>
         <source>%nh</source>
         <comment>hours</comment>
         <translation type="unfinished">
@@ -675,7 +675,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../qml/Constants/General.qml" line="108"/>
+        <location filename="../../qml/Constants/General.qml" line="111"/>
         <source>%nm</source>
         <comment>minutes</comment>
         <translation type="unfinished">
@@ -684,7 +684,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../qml/Constants/General.qml" line="109"/>
+        <location filename="../../qml/Constants/General.qml" line="112"/>
         <source>%ns</source>
         <comment>seconds</comment>
         <translation type="unfinished">
@@ -693,7 +693,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../../qml/Constants/General.qml" line="110"/>
+        <location filename="../../qml/Constants/General.qml" line="113"/>
         <source>%nms</source>
         <comment>milliseconds</comment>
         <translation type="unfinished">
@@ -702,7 +702,7 @@
         </translation>
     </message>
     <message>
-        <location filename="../../qml/Constants/General.qml" line="111"/>
+        <location filename="../../qml/Constants/General.qml" line="114"/>
         <source>-</source>
         <translation type="unfinished"></translation>
     </message>
@@ -961,7 +961,7 @@
     </message>
     <message>
         <location filename="../../qml/Dashboard/NotificationsPanel.qml" line="97"/>
-        <source>atomicDeFi Pro</source>
+        <source>atomicDEX Pro</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1016,110 +1016,110 @@
 <context>
     <name>OrderForm</name>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="177"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="189"/>
         <source>Sell %1</source>
         <comment>TICKER</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="186"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="198"/>
         <source>Buy %1</source>
         <comment>TICKER</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="212"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="224"/>
         <source>Price</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="253"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="265"/>
         <source>Volume</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="255"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="267"/>
         <source>Amount to sell</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="255"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="267"/>
         <source>Amount to receive</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="325"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="336"/>
         <source>Min</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="332"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="343"/>
         <source>Half</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="339"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="350"/>
         <source>Max</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="367"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="378"/>
         <source>Transaction Fee</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="385"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="396"/>
         <source>Trading Fee</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="403"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="414"/>
         <source>Minimum fee</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="404"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="415"/>
         <source>Fees will be calculated</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="423"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="434"/>
         <source>Total</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="446"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="457"/>
         <source>Start Swap</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="477"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="488"/>
         <source>Tradable (after fees) %1 balance is lower than minimum trade amount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="480"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="491"/>
         <source>Please fill the price field</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="483"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="494"/>
         <source>Please fill the volume field</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="486"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="497"/>
         <source>Volume is lower than minimum trade amount</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="490"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="501"/>
         <source>Not enough balance for the fees. Need at least %1 more</source>
         <comment>AMT TICKER</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="493"/>
+        <location filename="../../qml/Exchange/Trade/OrderForm.qml" line="504"/>
         <source>Not enough ETH for the transaction fee</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1340,42 +1340,42 @@
 <context>
     <name>Portfolio</name>
     <message>
-        <location filename="../../qml/Portfolio/Portfolio.qml" line="73"/>
+        <location filename="../../qml/Portfolio/Portfolio.qml" line="78"/>
         <source>TOTAL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Portfolio/Portfolio.qml" line="124"/>
+        <location filename="../../qml/Portfolio/Portfolio.qml" line="129"/>
         <source>Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Portfolio/Portfolio.qml" line="159"/>
+        <location filename="../../qml/Portfolio/Portfolio.qml" line="164"/>
         <source>Coin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Portfolio/Portfolio.qml" line="171"/>
+        <location filename="../../qml/Portfolio/Portfolio.qml" line="176"/>
         <source>Balance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Portfolio/Portfolio.qml" line="183"/>
+        <location filename="../../qml/Portfolio/Portfolio.qml" line="188"/>
         <source>Change 24h</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Portfolio/Portfolio.qml" line="195"/>
+        <location filename="../../qml/Portfolio/Portfolio.qml" line="200"/>
         <source>Trend 7d</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Portfolio/Portfolio.qml" line="207"/>
+        <location filename="../../qml/Portfolio/Portfolio.qml" line="212"/>
         <source>Price</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Portfolio/Portfolio.qml" line="256"/>
+        <location filename="../../qml/Portfolio/Portfolio.qml" line="261"/>
         <source>Disable %1</source>
         <comment>TICKER</comment>
         <translation type="unfinished"></translation>
@@ -1736,32 +1736,32 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Settings/Settings.qml" line="88"/>
+        <location filename="../../qml/Settings/Settings.qml" line="84"/>
         <source>View Seed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Settings/Settings.qml" line="102"/>
+        <location filename="../../qml/Settings/Settings.qml" line="98"/>
         <source>Disclaimer and ToS</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Settings/Settings.qml" line="117"/>
+        <location filename="../../qml/Settings/Settings.qml" line="113"/>
         <source>Setup Camouflage Password</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Settings/Settings.qml" line="127"/>
+        <location filename="../../qml/Settings/Settings.qml" line="123"/>
         <source>Delete Wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Settings/Settings.qml" line="138"/>
+        <location filename="../../qml/Settings/Settings.qml" line="134"/>
         <source>Log out</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Settings/Settings.qml" line="149"/>
+        <location filename="../../qml/Settings/Settings.qml" line="145"/>
         <source>mm2 version</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1769,7 +1769,7 @@
 <context>
     <name>Sidebar</name>
     <message>
-        <location filename="../../qml/Wallet/Sidebar.qml" line="165"/>
+        <location filename="../../qml/Wallet/Sidebar.qml" line="163"/>
         <source>Disable %1</source>
         <comment>TICKER</comment>
         <translation type="unfinished"></translation>
@@ -1784,6 +1784,11 @@
     </message>
     <message>
         <location filename="../../qml/Sidebar/SidebarBottom.qml" line="23"/>
+        <source>Support</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Sidebar/SidebarBottom.qml" line="31"/>
         <source>Privacy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1813,6 +1818,141 @@
     <message>
         <location filename="../../qml/Sidebar/SidebarCenter.qml" line="44"/>
         <source>Dapps</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Support</name>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="110"/>
+        <source>Update available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="110"/>
+        <source>Up to date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="132"/>
+        <source>Changelog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="146"/>
+        <source>Open Logs Folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="157"/>
+        <source>Frequently Asked Questions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="164"/>
+        <source>Do you store my private keys?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="165"/>
+        <source>No! AtomicDeFi is non-custodial. We never store any sensitive data, including your private keys, seed phrases, or PIN. All of these are only stored on the user’s device and never leave it. You are in full control of your assets.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="171"/>
+        <source>How is trading on AtomicDeFi different from trading on other DEXs?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="172"/>
+        <source>Other DEXs generally only allow you to trade assets that are based on a single blockchain network, use proxy tokens, and only allow placing a single order with the same funds.
+
+AtomicDeFi enables you to natively trade across two different blockchain networks without proxy tokens. You can also place multiple orders with the same funds, for example selling 0.1 BTC for KMD, QTUM, or VRSC -- the first that fills automatically cancels all other orders.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="178"/>
+        <source>How long does each atomic swap take?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="179"/>
+        <source>Several factors determine the processing time for each swap, the block time of the traded assets (Bitcoin is typically the slowest), network congestion, and your selected network fee (e.g. amount of gas you pay for ETH or ERC-20 swaps).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="185"/>
+        <source>Do I need to be online for the duration of the swap?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="186"/>
+        <source>Yes. You must remain connected to the internet and have your app running to successfully complete each atomic swap (very short cuts in connectivity are usually fine). Otherwise, your trade will automatically be canceled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="192"/>
+        <source>How are the fees on AtomicDeFi calculated?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="193"/>
+        <source>There are two fee categories to consider when trading on AtomicDeFi.
+
+1. AtomicDeFi charges a 0.15% trading fee for taker orders, and maker orders have zero fees.
+2. Both makers and takers will need to pay normal transaction fees when making atomic swaps.
+
+Network fees can vary greatly depending on your selected trading pair. This is why AtomicDeFi supports advanced fee management. We give you the option to choose between quicker swaps or lower fees!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="204"/>
+        <source>Do you provide user support?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="205"/>
+        <source>Yes! Unlike most open source blockchain projects, AtomicDeFi offers 24/7 support. Join our Discord, we are happy to help!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="211"/>
+        <source>Do you have country restrictions?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="212"/>
+        <source>No! AtomicDeFi is fully decentralized. It is not possible to limit user access by any third party.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="218"/>
+        <source>Who is behind AtomicDeFi?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="219"/>
+        <source>AtomicDeFi is developed by the Komodo team. Komodo is one of the most established blockchain projects working on innovative solutions like atomic swaps, Delayed Proof-of-Work, and an interoperable multi-chain architecture.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="225"/>
+        <source>Is it possible to develop my own white-label exchange on AtomicDeFi?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="226"/>
+        <source>Absolutely! You can read our developer documentation for more details or contact us with your partnership inquiries. Have a specific technical question? The AtomicDeFi developer community is always ready to help!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="232"/>
+        <source>Which devices can I use AtomicDeFi on?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Support/Support.qml" line="233"/>
+        <source>AtomicDeFi is available for mobile on both Android and iPhone, and for desktop on Windows, Linux and Mac operating systems.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1977,18 +2117,33 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../qml/Components/UpdateModal.qml" line="37"/>
+        <source>Up to date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../qml/Components/UpdateModal.qml" line="46"/>
         <source>New Update!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Components/UpdateModal.qml" line="61"/>
+        <location filename="../../qml/Components/UpdateModal.qml" line="46"/>
+        <source>Changelog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Components/UpdateModal.qml" line="60"/>
         <source>Problem occured</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../qml/Components/UpdateModal.qml" line="72"/>
+        <location filename="../../qml/Components/UpdateModal.qml" line="71"/>
         <source>Skip</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../qml/Components/UpdateModal.qml" line="71"/>
+        <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2032,7 +2187,7 @@
     <name>main</name>
     <message>
         <location filename="../../qml/main.qml" line="13"/>
-        <source>atomicDeFi Pro</source>
+        <source>atomicDEX Pro</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
