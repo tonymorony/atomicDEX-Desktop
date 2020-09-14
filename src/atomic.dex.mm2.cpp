@@ -21,6 +21,7 @@
 #include "atomic.dex.kill.hpp"
 #include "atomic.dex.mm2.config.hpp"
 #include "atomic.dex.mm2.hpp"
+#include "atomic.dex.qt.wallet.manager.hpp"
 #include "atomic.dex.security.hpp"
 #include "atomic.dex.version.hpp"
 
@@ -131,7 +132,7 @@ namespace
 
 namespace atomic_dex
 {
-    mm2::mm2(entt::registry& registry) : system(registry)
+    mm2::mm2(entt::registry& registry, ag::ecs::system_manager& system_manager) : system(registry), m_system_manager(system_manager)
     {
         m_orderbook_clock = std::chrono::high_resolution_clock::now();
         m_info_clock      = std::chrono::high_resolution_clock::now();
@@ -507,12 +508,14 @@ namespace atomic_dex
                             for (auto&& answer: answers)
                             {
                                 bool res = this->process_batch_enable_answer(answer);
-                                if (not res)
+                                if (not res && idx < tickers.size())
                                 {
-                                    spdlog::trace("bad answer for: {}, removing it from enabling", tickers[idx]);
+                                    spdlog::trace(
+                                        "bad answer for: [{}] -> removing it from enabling, idx: {}, tickers size: {}, answers size: {}", tickers[idx], idx,
+                                        tickers.size(), answers.size());
                                     tickers.erase(tickers.begin() + idx);
                                 }
-                                ++idx;
+                                idx += 1;
                             }
                             batch_balance_and_tx(false, tickers, true);
                             //! At this point, task is finished, let's refresh.
@@ -954,7 +957,7 @@ namespace atomic_dex
                     out.reserve(answer.result.value().transactions.size());
 
                     const auto& transactions = answer.result.value().transactions;
-                    std::for_each(rbegin(transactions), rend(transactions), [&out](auto&& current) {
+                    std::for_each(rbegin(transactions), rend(transactions), [&out, this](auto&& current) {
                         tx_infos current_info{
                             .am_i_sender       = current.my_balance_change[0] == '-',
                             .confirmations     = current.confirmations.has_value() ? current.confirmations.value() : 0,
@@ -971,6 +974,8 @@ namespace atomic_dex
                             .ec                = dextop_error::success,
                         };
 
+                        auto& wallet_manager          = this->m_system_manager.get_system<qt_wallet_manager>();
+                        current_info.transaction_note = wallet_manager.retrieve_transactions_notes(current_info.tx_hash);
                         out.push_back(std::move(current_info));
                     });
 
@@ -1013,7 +1018,7 @@ namespace atomic_dex
         m_orderbook_thread_active = false;
     }
 
-    t_buy_answer
+    /*t_buy_answer
     mm2::place_buy_order(t_buy_request&& request, const t_float_50& total, t_mm2_ec& ec) const
     {
         spdlog::debug("{} l{} f[{}]", __FUNCTION__, __LINE__, fs::path(__FILE__).filename().string());
@@ -1035,7 +1040,7 @@ namespace atomic_dex
         }
 
         return answer;
-    }
+    }*/
 
     bool
     mm2::do_i_have_enough_funds(const std::string& ticker, const t_float_50& amount) const
@@ -1110,7 +1115,7 @@ namespace atomic_dex
         return m_swaps_registry.at("result");
     }
 
-    t_sell_answer
+    /*t_sell_answer
     mm2::place_sell_order(t_sell_request&& request, const t_float_50& total, t_mm2_ec& ec) const
     {
         spdlog::debug("{} l{} f[{}]", __FUNCTION__, __LINE__, fs::path(__FILE__).filename().string());
@@ -1132,7 +1137,7 @@ namespace atomic_dex
         }
 
         return answer;
-    }
+    }*/
 
     t_tx_state
     mm2::get_tx_state(t_mm2_ec& ec) const
@@ -1319,10 +1324,11 @@ namespace atomic_dex
                 current_info.unconfirmed = true;
             }
 
+            auto& wallet_manager          = this->m_system_manager.get_system<qt_wallet_manager>();
+            current_info.transaction_note = wallet_manager.retrieve_transactions_notes(current_info.tx_hash);
+
             out.push_back(std::move(current_info));
         }
-
-        // std::sort(begin(out), end(out), [](auto&& a, auto&& b) { return a.timestamp > b.timestamp; });
 
         m_tx_informations.insert_or_assign("result", std::move(out));
         m_tx_state.insert_or_assign("result", std::move(state));

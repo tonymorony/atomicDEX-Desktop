@@ -4,6 +4,7 @@
 //! Project Headers
 #include "atomic.dex.global.price.service.hpp"
 #include "atomic.dex.qt.settings.page.hpp"
+#include "atomic.dex.qt.wallet.manager.hpp"
 #include "atomic.dex.qt.wallet.transactions.model.hpp"
 
 namespace
@@ -55,7 +56,8 @@ namespace atomic_dex
             {ToRole, "to"},
             {BlockheightRole, "blockheight"},
             {ConfirmationsRole, "confirmations"},
-            {UnconfirmedRole, "unconfirmed"}};
+            {UnconfirmedRole, "unconfirmed"},
+            {TransactionNoteRole, "transaction_note"}};
     }
 
     int
@@ -105,6 +107,14 @@ namespace atomic_dex
         case UnconfirmedRole:
             item.unconfirmed = value.toBool();
             break;
+        case TransactionNoteRole:
+        {
+            item.transaction_note = value.toString().toStdString();
+            auto& wallet_manager  = this->m_system_manager.get_system<qt_wallet_manager>();
+            wallet_manager.update_transactions_notes(item.tx_hash, item.transaction_note);
+            wallet_manager.update_wallet_cfg();
+            break;
+        }
         }
         emit dataChanged(index, index, {role});
         return true;
@@ -160,6 +170,8 @@ namespace atomic_dex
             return static_cast<quint64>(item.confirmations);
         case UnconfirmedRole:
             return item.unconfirmed;
+        case TransactionNoteRole:
+            return QString::fromStdString(item.transaction_note);
         }
         return {};
     }
@@ -168,7 +180,6 @@ namespace atomic_dex
     atomic_dex::transactions_model::reset()
     {
         this->m_file_count = 0;
-        //this->m_tx_registry.clear();
         this->beginResetModel();
         this->m_model_data.clear();
         this->endResetModel();
@@ -180,7 +191,7 @@ namespace atomic_dex
     {
         if (m_model_data.size() == 0)
         {
-            spdlog::trace("first time initialization");
+            spdlog::trace("first time initialization, inserting {} transactions", transactions.size());
             //! First time insertion
             beginResetModel();
             m_model_data = transactions;
@@ -217,16 +228,25 @@ namespace atomic_dex
     void
     atomic_dex::transactions_model::update_or_insert_transactions(const t_transactions& transactions)
     {
+        if (m_model_data.size() > transactions.size())
+        {
+            spdlog::warn("old model data already bigger than the new one, bypassing");
+            return;
+        }
         t_transactions to_init;
         auto           difference = transactions.size() - this->m_model_data.size();
+        spdlog::trace("difference between old transactions call and new transactions is: {}", difference);
+        spdlog::trace("new transactions size is: {}, old one is: {}", transactions.size(), m_model_data.size());
         if (difference > 0)
         {
             //! There is new transactions
             to_init = t_transactions(transactions.begin(), transactions.begin() + difference);
         }
+        spdlog::trace("updating transactions");
         std::for_each(begin(transactions) + difference, end(transactions), [this](const tx_infos& tx) { this->update_transaction(tx); });
         if (not to_init.empty())
         {
+            spdlog::trace("to init transactions started: {}", to_init.size());
             this->init_transactions(to_init);
         }
     }
@@ -247,25 +267,24 @@ namespace atomic_dex
     atomic_dex::transactions_model::fetchMore(const QModelIndex& parent)
     {
         if (parent.isValid())
+        {
             return;
+        }
         int remainder      = m_model_data.size() - m_file_count;
         int items_to_fetch = qMin(50, remainder);
         if (items_to_fetch <= 0)
+        {
             return;
+        }
         spdlog::trace("fetching {} transactions, total tx: {}", items_to_fetch, m_model_data.size());
         beginInsertRows(QModelIndex(), m_file_count, m_file_count + items_to_fetch - 1);
-
         m_file_count += items_to_fetch;
-
         endInsertRows();
-        /*std::for_each(m_model_data.begin() + (m_file_count - items_to_fetch), m_model_data.begin() + m_file_count, [this](const tx_infos& tx) {
-            this->m_tx_registry.emplace(tx.tx_hash);
-        });*/
         emit lengthChanged();
     }
 
     bool
-    atomic_dex::transactions_model::canFetchMore(const QModelIndex& parent) const
+    atomic_dex::transactions_model::canFetchMore([[maybe_unused]] const QModelIndex& parent) const
     {
         return (m_file_count < m_model_data.size());
     }

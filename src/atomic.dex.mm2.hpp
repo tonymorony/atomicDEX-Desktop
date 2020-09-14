@@ -44,6 +44,7 @@ namespace atomic_dex
         std::size_t              block_height;
         t_mm2_ec                 ec{dextop_error::success};
         bool                     unconfirmed{false};
+        std::string              transaction_note{""};
     };
 
     struct tx_state
@@ -86,6 +87,7 @@ namespace atomic_dex
         using t_synchronized_max_taker_vol = boost::synchronized_value<t_pair_max_vol>;
         using t_synchronized_ticker        = boost::synchronized_value<std::string>;
 
+        ag::ecs::system_manager& m_system_manager;
         //! Client
         std::shared_ptr<t_http_client>  m_mm2_client{nullptr};
         pplx::cancellation_token_source m_token_source;
@@ -151,7 +153,7 @@ namespace atomic_dex
 
       public:
         //! Constructor
-        explicit mm2(entt::registry& registry);
+        explicit mm2(entt::registry& registry, ag::ecs::system_manager& system_manager);
 
         //! Delete useless operator
         mm2(const mm2& other)  = delete;
@@ -212,10 +214,10 @@ namespace atomic_dex
         [[nodiscard]] std::string my_balance_with_locked_funds(const std::string& ticker, t_mm2_ec& ec) const;
 
         //! Place a buy order, Doesn't work if i don't have enough funds.
-        t_buy_answer place_buy_order(t_buy_request&& request, const t_float_50& total, t_mm2_ec& ec) const;
+        //t_buy_answer place_buy_order(t_buy_request&& request, const t_float_50& total, t_mm2_ec& ec) const;
 
         //! Place a buy order, Doesn't work if i don't have enough funds.
-        t_sell_answer place_sell_order(t_sell_request&& request, const t_float_50& total, t_mm2_ec& ec) const;
+        //t_sell_answer place_sell_order(t_sell_request&& request, const t_float_50& total, t_mm2_ec& ec) const;
 
         //! Last 50 transactions maximum
         [[nodiscard]] t_transactions get_tx_history(t_mm2_ec& ec) const;

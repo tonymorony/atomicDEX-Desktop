@@ -276,24 +276,35 @@ Item {
                     "  /  nota:", nota, "  /  confs:", confs)
         console.log("QML place order: trade info:", JSON.stringify(curr_trade_info))
 
-        let result
-
         if(sell_mode)
-            result = API.get().trading_pg.place_sell_order(base, rel, price, volume, is_created_order, price_denom, price_numer, nota, confs)
+            API.get().trading_pg.place_sell_order(base, rel, price, volume, is_created_order, price_denom, price_numer, nota, confs)
         else
-            result = API.get().trading_pg.place_buy_order(base, rel, price, volume, is_created_order, price_denom, price_numer, nota, confs)
+            API.get().trading_pg.place_buy_order(base, rel, price, volume, is_created_order, price_denom, price_numer, nota, confs)
+    }
 
-        if(result === "") {
-            action_result = "success"
+    readonly property bool buy_sell_rpc_busy: API.get().trading_pg.buy_sell_rpc_busy
+    readonly property var buy_sell_last_rpc_data: API.get().trading_pg.buy_sell_last_rpc_data
 
-            toast.show(qsTr("Placed the order"), General.time_toast_basic_info, result, false)
+    onBuy_sell_last_rpc_dataChanged: {
+        const response = General.clone(buy_sell_last_rpc_data)
 
-            onOrderSuccess()
-        }
-        else {
+        if(response.error_code) {
+            confirm_trade_modal.close()
+
             action_result = "error"
 
-            toast.show(qsTr("Failed to place the order"), General.time_toast_important_error, result)
+            toast.show(qsTr("Failed to place the order"), General.time_toast_important_error, response.error_message)
+
+            return
+        }
+        else if(response.result && response.result.uuid) { // Make sure there is information
+            confirm_trade_modal.close()
+
+            action_result = "success"
+
+            toast.show(qsTr("Placed the order"), General.time_toast_basic_info, General.prettifyJSON(response.result), false)
+
+            onOrderSuccess()
         }
     }
 
@@ -336,10 +347,11 @@ Item {
                 // Ticker Selectors
                 RowLayout {
                     id: selectors
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.left: parent.left
+                    anchors.right: parent.right
                     anchors.bottom: orderbook.top
                     anchors.bottomMargin: layout_margin
-                    spacing: 40
+                    spacing: 20
 
                     TickerSelector {
                         id: selector_left
@@ -347,17 +359,40 @@ Item {
                         ticker_list: API.get().trading_pg.market_pairs_mdl.left_selection_box
                         ticker: API.get().trading_pg.market_pairs_mdl.left_selected_coin
                         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                        Layout.fillWidth: true
                     }
 
                     // Swap button
-                    DefaultImage {
-                        source: General.image_path + "trade_icon.svg"
-                        Layout.preferredWidth: 16
-                        Layout.preferredHeight: Layout.preferredWidth
+                    Item {
                         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                        Layout.preferredWidth: right_arrow.width
+                        Layout.preferredHeight: selector_left.height * 0.9
+
+                        DefaultText {
+                            id: right_arrow
+                            anchors.right: parent.right
+                            anchors.top: parent.top
+                            anchors.topMargin: -font.pixelSize/4
+                            text_value: "→"
+                            font.family: "Impact"
+                            font.pixelSize: 30
+                            font.bold: true
+                            color: Qt.lighter(Style.getCoinColor(selector_left.ticker), swap_button.containsMouse ? 1.5 : 1.0)
+                        }
+                        DefaultText {
+                            anchors.left: parent.left
+                            anchors.bottom: parent.bottom
+                            text_value: "←"
+                            font.family: right_arrow.font.family
+                            font.pixelSize: right_arrow.font.pixelSize
+                            font.bold: right_arrow.font.bold
+                            color: Qt.lighter(Style.getCoinColor(selector_right.ticker), swap_button.containsMouse ? 1.5 : 1.0)
+                        }
 
                         MouseArea {
+                            id: swap_button
                             anchors.fill: parent
+                            hoverEnabled: true
                             onClicked: {
                                 if(!block_everything)
                                     setPair(true, right_ticker)
@@ -371,6 +406,7 @@ Item {
                         ticker_list: API.get().trading_pg.market_pairs_mdl.right_selection_box
                         ticker: API.get().trading_pg.market_pairs_mdl.right_selected_coin
                         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                        Layout.fillWidth: true
                     }
                 }
 

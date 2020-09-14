@@ -43,7 +43,7 @@ ColumnLayout {
         input_coin_filter.reset()
     }
 
-    function updateChart(chart, historical) {
+    function updateChart(chart, historical, color) {
         chart.removeAllSeries()
 
         let i
@@ -52,7 +52,7 @@ ColumnLayout {
             let series = chart.createSeries(ChartView.SeriesTypeSpline, "Price", chart.axes[0], chart.axes[1]);
 
             series.style = Qt.SolidLine
-            series.color = Style.colorTheme1
+            series.color = color
 
             let min = 999999999
             let max = -999999999
@@ -249,6 +249,15 @@ ColumnLayout {
             width: portfolio.width
             height: 50
 
+            Rectangle {
+                id: main_color
+                color: Style.getCoinColor(ticker)
+                width: 10
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+            }
+
             // Click area
             MouseArea {
                 id: mouse_area
@@ -310,6 +319,7 @@ ColumnLayout {
 
             // Change 24h
             DefaultText {
+                id: change_24h_value
                 anchors.right: parent.right
                 anchors.rightMargin: change_24h_header.anchors.rightMargin
 
@@ -357,9 +367,33 @@ ColumnLayout {
                 anchors.verticalCenter: parent.verticalCenter
                 legend.visible: false
 
-                onHistoricalChanged: updateChart(chart, historical)
-
+                onHistoricalChanged: updateChart(chart, historical, change_24h_value.color)
                 backgroundColor: "transparent"
+            }
+
+            Rectangle {
+                anchors.left: chart.right
+                anchors.leftMargin: -10
+                anchors.verticalCenter: parent.verticalCenter
+
+                visible: {
+                    const type = API.get().get_coin_info(ticker).type
+                    return (type === "ERC-20" && ticker !== "ETH") ||
+                           (type === "QRC-20" && ticker !== "QTUM")
+                }
+                radius: 20
+
+                height: type_tag.font.pixelSize * 1.5
+                width: type_tag.width + 8
+
+                color: Style.getCoinColor(API.get().get_coin_info(ticker).type === "ERC-20" ? "ETH" : "QTUM")
+                DefaultText {
+                    id: type_tag
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: API.get().settings_pg.empty_string + (API.get().get_coin_info(ticker).type === "ERC-20" ? "ERC-20" : "QRC-20")
+                    font.pixelSize: Style.textSizeSmall1
+                }
             }
         }
     }

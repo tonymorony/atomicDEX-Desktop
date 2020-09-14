@@ -185,6 +185,12 @@ namespace atomic_dex
         return true;
     }
 
+    void
+    qt_wallet_manager::update_transactions_notes(const std::string& tx_hash, const std::string& notes)
+    {
+        m_wallet_cfg.transactions_details->operator[](tx_hash).note = notes;
+    }
+
     bool
     qt_wallet_manager::update_wallet_cfg() noexcept
     {
@@ -329,5 +335,24 @@ namespace atomic_dex
     {
         this->m_wallet_cfg.protection_pass = emergency_password.toStdString();
         update_wallet_cfg();
+    }
+
+    void
+    qt_wallet_manager::update() noexcept
+    {
+    }
+
+    qt_wallet_manager::qt_wallet_manager(entt::registry& registry) : system(registry) {}
+
+    std::string
+    qt_wallet_manager::retrieve_transactions_notes(const std::string& tx_hash) const
+    {
+        std::string note     = "";
+        auto        registry = m_wallet_cfg.transactions_details.get();
+        if (registry.find(tx_hash) != registry.end())
+        {
+            note = registry.at(tx_hash).note;
+        }
+        return note;
     }
 } // namespace atomic_dex

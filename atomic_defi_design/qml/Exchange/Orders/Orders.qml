@@ -12,12 +12,6 @@ Item {
     property string base
     property var orders_model: API.get().orders_mdl
 
-    // Local
-    function onCancelOrder(order_id) {
-        API.get().trading_pg.cancel_order(order_id)
-    }
-
-
     function inCurrentPage() {
         return  exchange.inCurrentPage() &&
                 exchange.current_page === General.idx_exchange_orders
@@ -39,9 +33,6 @@ Item {
 
     function changeTicker(ticker) {
         combo_base.currentIndex = combo_base.model.map(c => c.value).indexOf(ticker)
-    }
-
-    function onOrderPlaced() {
     }
 
     ColumnLayout {

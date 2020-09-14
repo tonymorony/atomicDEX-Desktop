@@ -48,7 +48,6 @@
 #include "atomic.dex.provider.coinpaprika.hpp"
 #include "atomic.dex.qt.bindings.hpp"
 #include "atomic.dex.qt.settings.page.hpp"
-#include "atomic.dex.qt.utilities.hpp"
 #include "atomic.dex.qt.wallet.page.hpp"
 #include "atomic.dex.security.hpp"
 #include "atomic.dex.update.service.hpp"
@@ -202,7 +201,7 @@ namespace atomic_dex
         this->process_one_frame();
         if (m_event_actions[events_action::need_a_full_refresh_of_mm2])
         {
-            auto& mm2_s = system_manager_.create_system<mm2>();
+            auto& mm2_s = system_manager_.create_system<mm2>(system_manager_);
 
             system_manager_.create_system<coinpaprika_provider>(mm2_s, system_manager_.get_system<settings_page>().get_cfg());
             system_manager_.create_system<cex_prices_provider>(mm2_s);
@@ -286,35 +285,6 @@ namespace atomic_dex
         }
     }
 
-    /*void
-    application::refresh_transactions(const mm2& mm2)
-    {
-        const auto      ticker = m_coin_info->get_ticker().toStdString();
-        std::error_code ec;
-        auto            txs = mm2.get_tx_history(ticker, ec);
-        if (!ec)
-        {
-            const auto& config        = system_manager_.get_system<settings_page>().get_cfg();
-            auto&       price_service = system_manager_.get_system<global_price_service>();
-            m_coin_info->set_transactions(to_qt_binding(std::move(txs), price_service, config.current_currency, ticker));
-        }
-        auto tx_state = mm2.get_tx_state(ticker, ec);
-
-        if (!ec)
-        {
-            m_coin_info->set_tx_state(QString::fromStdString(tx_state.state));
-            if (mm2.get_coin_info(ticker).is_erc_20)
-            {
-                m_coin_info->set_blocks_left(tx_state.blocks_left);
-            }
-            else
-            {
-                m_coin_info->set_txs_left(tx_state.transactions_left);
-            }
-            m_coin_info->set_tx_current_block(tx_state.current_block);
-        }
-    }*/
-
     mm2&
     application::get_mm2() noexcept
     {
@@ -332,14 +302,14 @@ namespace atomic_dex
         m_update_status(QJsonObject{
             {"update_needed", false}, {"changelog", ""}, {"current_version", ""}, {"download_url", ""}, {"new_version", ""}, {"rpc_code", 0}, {"status", ""}}),
         m_manager_models{
-            {"addressbook", new addressbook_model(this->m_wallet_manager, this)},
+            {"addressbook", new addressbook_model(system_manager_.create_system<qt_wallet_manager>(), this)},
             {"orders", new orders_model(this->system_manager_, this->dispatcher_, this)},
             {"internet_service", std::addressof(system_manager_.create_system<internet_service_checker>(this))},
             {"notifications", new notification_manager(this->dispatcher_, this)}}
     {
         get_dispatcher().sink<refresh_update_status>().connect<&application::on_refresh_update_status_event>(*this);
         //! MM2 system need to be created before the GUI and give the instance to the gui
-        auto& mm2_system           = system_manager_.create_system<mm2>();
+        auto& mm2_system           = system_manager_.create_system<mm2>(system_manager_);
         auto& settings_page_system = system_manager_.create_system<settings_page>(m_app, this);
         auto& portfolio_system     = system_manager_.create_system<portfolio_page>(system_manager_, this);
         portfolio_system.get_portfolio()->set_cfg(settings_page_system.get_cfg());
@@ -443,13 +413,6 @@ namespace atomic_dex
     }
 
     void
-    application::on_mm2_started_event([[maybe_unused]] const mm2_started& evt) noexcept
-    {
-        spdlog::debug("{} l{}", __FUNCTION__, __LINE__);
-        // this->set_status("complete");
-    }
-
-    void
     application::on_refresh_update_status_event([[maybe_unused]] const refresh_update_status& evt) noexcept
     {
         spdlog::debug("{} l{}", __FUNCTION__, __LINE__);
@@ -518,6 +481,7 @@ namespace atomic_dex
 
         system_manager_.get_system<portfolio_page>().get_portfolio()->reset();
         system_manager_.get_system<trading_page>().clear_models();
+        get_wallet_page()->get_transactions_mdl()->reset();
 
         //! Mark systems
         system_manager_.mark_system<mm2>();
@@ -534,13 +498,13 @@ namespace atomic_dex
         get_dispatcher().sink<coin_fully_initialized>().disconnect<&application::on_coin_fully_initialized_event>(*this);
         get_dispatcher().sink<coin_disabled>().disconnect<&application::on_coin_disabled_event>(*this);
         get_dispatcher().sink<mm2_initialized>().disconnect<&application::on_mm2_initialized_event>(*this);
-        get_dispatcher().sink<mm2_started>().disconnect<&application::on_mm2_started_event>(*this);
         get_dispatcher().sink<process_orders_finished>().disconnect<&application::on_process_orders_finished_event>(*this);
         get_dispatcher().sink<process_swaps_finished>().disconnect<&application::on_process_swaps_finished_event>(*this);
 
         m_event_actions[events_action::need_a_full_refresh_of_mm2] = true;
 
-        this->m_wallet_manager.just_set_wallet_name("");
+        auto& wallet_manager = this->system_manager_.get_system<qt_wallet_manager>();
+        wallet_manager.just_set_wallet_name("");
         emit onWalletDefaultNameChanged();
 
         this->m_btc_fully_enabled = false;
@@ -562,7 +526,6 @@ namespace atomic_dex
         get_dispatcher().sink<coin_fully_initialized>().connect<&application::on_coin_fully_initialized_event>(*this);
         get_dispatcher().sink<coin_disabled>().connect<&application::on_coin_disabled_event>(*this);
         get_dispatcher().sink<mm2_initialized>().connect<&application::on_mm2_initialized_event>(*this);
-        get_dispatcher().sink<mm2_started>().connect<&application::on_mm2_started_event>(*this);
         get_dispatcher().sink<process_orders_finished>().connect<&application::on_process_orders_finished_event>(*this);
         get_dispatcher().sink<process_swaps_finished>().connect<&application::on_process_swaps_finished_event>(*this);
     }
@@ -827,7 +790,6 @@ namespace atomic_dex
     application::on_fiat_rate_updated(const fiat_rate_updated&) noexcept
     {
         spdlog::trace("{} l{}", __FUNCTION__, __LINE__);
-        std::error_code ec;
         this->dispatcher_.trigger<update_portfolio_values>();
     }
 
@@ -910,32 +872,37 @@ namespace atomic_dex
     void
     application::set_emergency_password(const QString& emergency_password)
     {
-        m_wallet_manager.set_emergency_password(emergency_password);
+        auto& wallet_manager = this->system_manager_.get_system<qt_wallet_manager>();
+        wallet_manager.set_emergency_password(emergency_password);
     }
 
     QString
     application::get_wallet_default_name() const noexcept
     {
-        return m_wallet_manager.get_wallet_default_name();
+        const auto& wallet_manager = this->system_manager_.get_system<qt_wallet_manager>();
+        return wallet_manager.get_wallet_default_name();
     }
 
     void
     application::set_wallet_default_name(QString wallet_name) noexcept
     {
-        m_wallet_manager.set_wallet_default_name(std::move(wallet_name));
+        auto& wallet_manager = this->system_manager_.get_system<qt_wallet_manager>();
+        wallet_manager.set_wallet_default_name(std::move(wallet_name));
         emit onWalletDefaultNameChanged();
     }
 
     bool
     atomic_dex::application::create(const QString& password, const QString& seed, const QString& wallet_name)
     {
-        return m_wallet_manager.create(password, seed, wallet_name);
+        auto& wallet_manager = this->system_manager_.get_system<qt_wallet_manager>();
+        return wallet_manager.create(password, seed, wallet_name);
     }
 
     bool
     application::login(const QString& password, const QString& wallet_name)
     {
-        bool res = m_wallet_manager.login(password, wallet_name, get_mm2(), [this, &wallet_name]() {
+        auto& wallet_manager = this->system_manager_.get_system<qt_wallet_manager>();
+        bool res = wallet_manager.login(password, wallet_name, get_mm2(), [this, &wallet_name]() {
             this->set_wallet_default_name(wallet_name);
             this->set_status("initializing_mm2");
         });

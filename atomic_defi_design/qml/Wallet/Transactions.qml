@@ -32,13 +32,23 @@ DefaultListView {
             }
         }
 
+        Circle {
+            id: note_tag
+            width: 6
+            color: Style.colorOrange
+            anchors.left: parent.left
+            anchors.leftMargin: 15
+            anchors.verticalCenter: parent.verticalCenter
+            visible: transaction_note !== ""
+        }
+
         Arrow {
             id: received_icon
             up: am_i_sender
             color: !am_i_sender ? Style.colorGreen : Style.colorRed
             anchors.verticalCenter: parent.verticalCenter
-            anchors.left: parent.left
-            anchors.leftMargin: 15
+            anchors.left: note_tag.right
+            anchors.leftMargin: 10
         }
 
         // Description
@@ -48,7 +58,7 @@ DefaultListView {
             font.pixelSize: Style.textSizeSmall3
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: received_icon.right
-            anchors.leftMargin: 25
+            anchors.leftMargin: 10
         }
 
         // Crypto
@@ -88,7 +98,7 @@ DefaultListView {
         // Date
         DefaultText {
             font.pixelSize: description.font.pixelSize
-            text_value: API.get().settings_pg.empty_string + (unconfirmed ? qsTr("Unconfirmed"):  date)
+            text_value: API.get().settings_pg.empty_string + (unconfirmed ? qsTr("Unconfirmed") :  date)
             anchors.verticalCenter: parent.verticalCenter
             anchors.right: parent.right
             anchors.rightMargin: 20

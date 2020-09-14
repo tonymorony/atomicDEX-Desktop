@@ -125,7 +125,8 @@ QtObject {
     }
 
     function prettifyJSON(j) {
-        return JSON.stringify(JSON.parse(j), null, 4)
+        const j_obj = typeof j === "string" ? JSON.parse(j) : j
+        return JSON.stringify(j_obj, null, 4)
     }
 
     function viewTxAtExplorer(ticker, id, add_0x=true) {
@@ -261,9 +262,9 @@ QtObject {
         return exists(v) && v !== ""
     }
 
-    function isEthNeeded() {
+    function isParentCoinNeeded(ticker, type) {
         for(const c of API.get().enabled_coins)
-            if(c.type === "ERC-20" && c.ticker !== "ETH") return true
+            if(c.type === type && c.ticker !== ticker) return true
 
         return false
     }
@@ -275,22 +276,30 @@ QtObject {
             return false
 
         if(ticker === "KMD" || ticker === "BTC") return false
-
-        if(ticker === "ETH") return !General.isEthNeeded()
+        else if(ticker === "ETH") return !General.isParentCoinNeeded("ETH", "ERC-20")
+        else if(ticker === "QTUM") return !General.isParentCoinNeeded("QTUM", "QRC-20")
 
         return true
     }
 
-    function isEthEnabled() {
+    function tokenUnitName(type) {
+        return type === "ERC-20" ? "Gwei" : "Satoshi"
+    }
+
+    function isTokenType(type) {
+        return type === "ERC-20" || type === "QRC-20"
+    }
+
+    function isCoinEnabled(ticker) {
         for(const c of API.get().enabled_coins)
-            if(c.ticker === "ETH") return true
+            if(c.ticker === ticker) return true
 
         return false
     }
 
-    function enableEthIfNeeded() {
-        if(!isEthEnabled() && isEthNeeded()) {
-            API.get().enable_coins(["ETH"])
+    function enableParentCoinIfNeeded(ticker, type) {
+        if(!isCoinEnabled(ticker) && isParentCoinNeeded(ticker, type)) {
+            API.get().enable_coins([ticker])
             return true
         }
 
