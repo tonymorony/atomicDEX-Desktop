@@ -6,14 +6,15 @@ import Qt.labs.platform 1.0
 import "../Constants"
 import "../Components"
 
-FloatingBackground {
+BasicModal {
     id: root
 
+    width: 600
     property var notifications_list: ([])
 
     function reset() {
-        visible = false
         notifications_list = []
+        root.close()
     }
 
     function showApp() {
@@ -33,14 +34,6 @@ FloatingBackground {
         window.requestActivate()
     }
 
-    visible: false
-
-    MouseArea {
-        anchors.fill: parent
-        preventStealing: true
-        hoverEnabled: true
-    }
-
     function performLastNotificationAction() {
         if(notifications_list.length === 0) return
 
@@ -48,7 +41,7 @@ FloatingBackground {
 
         switch(notification.click_action) {
         case "open_notifications":
-            root.visible = true
+            root.open()
             break
         case "open_wallet_page":
             api_wallet_page.ticker = notification.params.ticker
@@ -113,12 +106,12 @@ FloatingBackground {
 
     // System
     Component.onCompleted: {
-        API.get().notification_mgr.updateSwapStatus.connect(onUpdateSwapStatus)
-        API.get().notification_mgr.balanceUpdateStatus.connect(onBalanceUpdateStatus)
+        API.app.notification_mgr.updateSwapStatus.connect(onUpdateSwapStatus)
+        API.app.notification_mgr.balanceUpdateStatus.connect(onBalanceUpdateStatus)
     }
 
     function displayMessage(title, message) {
-        if(API.get().settings_pg.notification_enabled)
+        if(API.app.settings_pg.notification_enabled)
             tray.showMessage(title, message)
     }
 
@@ -133,65 +126,45 @@ FloatingBackground {
 
         tooltip: qsTr("atomicDEX Pro")
 
-        onActivated: showApp()
-    }
+//        onActivated: showApp()
 
-    ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: 40
-
-        spacing: 10
-
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.alignment: Qt.AlignLeft | Qt.AlignBottom
-            DefaultText {
-                text_value: API.get().settings_pg.empty_string + (qsTr("Notifications"))
-                font.pixelSize: Style.textSize2
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+        menu: Menu {
+            MenuItem {
+                text: API.app.settings_pg.empty_string + (qsTr("Show"))
+                onTriggered: showApp()
             }
 
-            Rectangle {
-                radius: 3
+            MenuItem {
+                text: API.app.settings_pg.empty_string + (qsTr("Restart"))
+                onTriggered: API.app.restart()
+            }
 
-                width: mark_all_as_read.width + 10
-                height: mark_all_as_read.height + 10
-
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-
-                color: Style.colorTheme1
-
-                DefaultText {
-                    id: mark_all_as_read
-                    text_value: API.get().settings_pg.empty_string + (qsTr("Clear") + " ✔️")
-                    font.pixelSize: Style.textSizeSmall3
-                    anchors.centerIn: parent
-                    color: Style.colorWhite10
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        notifications_list = []
-                    }
-                }
+            MenuItem {
+                text: API.app.settings_pg.empty_string + (qsTr("Quit"))
+                onTriggered: Qt.quit()
             }
         }
+    }
 
-        HorizontalLine {
-            Layout.alignment: Qt.AlignTop
+    ModalContent {
+        title: API.app.settings_pg.empty_string + (qsTr("Notifications"))
+
+        DefaultButton {
+            visible: list.visible
+            text: API.app.settings_pg.empty_string + (qsTr("Clear all") + " ✔️")
+            onClicked: notifications_list = []
             Layout.fillWidth: true
         }
 
         InnerBackground {
             Layout.fillWidth: true
-            Layout.fillHeight: true
+
+            Layout.preferredHeight: 500
 
             DefaultText {
                 anchors.centerIn: parent
                 visible: !list.visible
-                text_value: API.get().settings_pg.empty_string + (qsTr("There isn't any notification"))
+                text_value: API.app.settings_pg.empty_string + (qsTr("There isn't any notification"))
                 font.pixelSize: Style.textSizeSmall2
             }
 
@@ -212,7 +185,7 @@ FloatingBackground {
                         anchors.topMargin: 10
                         anchors.right: parent.right
                         anchors.rightMargin: 25
-                        text_value: API.get().settings_pg.empty_string + (modelData.time)
+                        text_value: API.app.settings_pg.empty_string + (modelData.time)
                         font.pixelSize: Style.textSizeSmall
                     }
 
@@ -222,13 +195,13 @@ FloatingBackground {
                         anchors.leftMargin: 10
 
                         DefaultText {
-                            text_value: API.get().settings_pg.empty_string + (modelData.title)
+                            text_value: API.app.settings_pg.empty_string + (modelData.title)
                             font.pixelSize: Style.textSizeSmall4
                             font.bold: true
                         }
 
                         DefaultText {
-                            text_value: API.get().settings_pg.empty_string + (modelData.message)
+                            text_value: API.app.settings_pg.empty_string + (modelData.message)
                             font.pixelSize: Style.textSizeSmall1
                         }
                     }
@@ -243,8 +216,8 @@ FloatingBackground {
                         light: true
                     }
 
-                    Rectangle {
-                        radius: 100
+                    AnimatedRectangle {
+                        radius: Style.rectangleCornerRadius
 
                         width: height
                         height: remove_button.height * 1.2
@@ -254,18 +227,20 @@ FloatingBackground {
                         anchors.right: parent.right
                         anchors.rightMargin: anchors.bottomMargin + 20
 
-                        color: Style.colorTheme1
+                        color: Qt.lighter(Style.colorTheme1, remove_button_area.containsMouse ? Style.hoverLightMultiplier : 1.0)
 
                         DefaultText {
                             id: remove_button
-                            text_value: API.get().settings_pg.empty_string + ("✔️")
+                            text_value: API.app.settings_pg.empty_string + ("✔️")
                             anchors.centerIn: parent
                             font.pixelSize: Style.textSizeSmall3
                             color: Style.colorWhite10
                         }
 
-                        MouseArea {
+                        DefaultMouseArea {
+                            id: remove_button_area
                             anchors.fill: parent
+                            hoverEnabled: true
                             onClicked: {
                                 notifications_list.splice(index, 1)
                                 notifications_list = notifications_list
@@ -277,23 +252,13 @@ FloatingBackground {
         }
 
 
-        RowLayout {
-            Layout.alignment: Qt.AlignBottom | Qt.AlignRight
-            Layout.bottomMargin: parent.spacing
-            spacing: 10
-
-//            DefaultButton {
-//                text: API.get().settings_pg.empty_string + (qsTr("Pop Test Notification"))
-//                onClicked: {
-//                    onSwapStatusUpdated("ongoing", "finished", Date.now().toString(), "BTC", "KMD", "13.3.1337")
-//                }
-//            }
-
+        footer: [
             DefaultButton {
-                text: API.get().settings_pg.empty_string + (qsTr("Close"))
-                onClicked: root.visible = false
+                Layout.fillWidth: true
+                text: API.app.settings_pg.empty_string + (qsTr("Close"))
+                onClicked: root.close()
             }
-        }
+        ]
     }
 }
 
