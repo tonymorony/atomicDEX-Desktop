@@ -1,6 +1,6 @@
-import QtQuick 2.14
-import QtQuick.Layouts 1.12
-import QtQuick.Controls 2.14
+import QtQuick 2.15
+import QtQuick.Layouts 1.15
+import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.0
 
 import "../../Components"
@@ -16,7 +16,11 @@ RowLayout {
     property var ticker_list
     property string ticker
 
-    onTickerChanged: combo.currentIndex = combo.indexOfValue(ticker)
+    function renewIndex() {
+        combo.currentIndex = combo.indexOfValue(ticker)
+    }
+
+    onTickerChanged: renewIndex()
 
     DexComboBox {
         id: combo
@@ -45,7 +49,7 @@ RowLayout {
 
         onCurrentValueChanged: {
             combo.index_changed = false
-            setPair(left_side, currentValue)
+            if(currentValue !== undefined) setPair(left_side, currentValue)
         }
 
         Layout.fillWidth: true

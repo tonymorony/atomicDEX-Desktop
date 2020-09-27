@@ -1,6 +1,6 @@
-import QtQuick 2.14
-import QtQuick.Layouts 1.12
-import QtQuick.Controls 2.12
+import QtQuick 2.15
+import QtQuick.Layouts 1.15
+import QtQuick.Controls 2.15
 
 import QtGraphicalEffects 1.0
 import "../Components"
@@ -25,8 +25,7 @@ Item {
 
     function openLogsFolder() {
         API.app.export_swaps_json()
-        const prefix = Qt.platform.os == "windows" ? "file:///" : "file://"
-        Qt.openUrlExternally(prefix + API.app.get_log_folder())
+        Qt.openUrlExternally(General.os_file_prefix + API.app.get_log_folder())
     }
 
     readonly property var api_wallet_page: API.app.wallet_pg

@@ -1,6 +1,6 @@
-import QtQuick 2.14
-import QtQuick.Layouts 1.12
-import QtQuick.Controls 2.12
+import QtQuick 2.15
+import QtQuick.Layouts 1.15
+import QtQuick.Controls 2.15
 
 import "../Components"
 import "../Constants"
@@ -133,7 +133,6 @@ BasicModal {
 
         DefaultText {
             text_value: API.app.settings_pg.empty_string + (General.cex_icon + ' <a href="https://support.komodoplatform.com/support/solutions/articles/29000024428-komodo-5-active-user-reward-all-you-need-to-know">' + qsTr('Read more about KMD active users rewards') + '</a>')
-            wrapMode: Text.WordWrap
             font.pixelSize: Style.textSizeSmall2
         }
 

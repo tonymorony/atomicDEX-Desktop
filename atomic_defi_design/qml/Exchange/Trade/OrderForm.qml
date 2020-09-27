@@ -1,6 +1,6 @@
-import QtQuick 2.14
-import QtQuick.Layouts 1.12
-import QtQuick.Controls 2.12
+import QtQuick 2.15
+import QtQuick.Layouts 1.15
+import QtQuick.Controls 2.15
 import QtGraphicalEffects 1.0
 
 import "../../Components"
@@ -14,6 +14,8 @@ FloatingBackground {
     property bool is_sell_form: false
     property alias column_layout: form_layout
     property string total_amount: "0"
+
+    readonly property bool form_currently_visible: is_sell_form === sell_mode
 
     function getFiatText(v, ticker) {
         return General.formatFiat('', v === '' ? 0 : API.app.get_fiat_from_amount(ticker, v), API.app.settings_pg.current_fiat) + " " +  General.cex_icon
@@ -77,9 +79,9 @@ FloatingBackground {
 
         const base = base_ticker
         const rel = rel_ticker
-        const amount = getMaxVolume()
+        const amount = getMaxBalance()
 
-        if(base === '' || rel === '') return 0
+        if(base === '' || rel === '' || !form_currently_visible) return 0
 
         const info = getTradeInfo(base, rel, amount, set_as_current)
         const my_amt = parseFloat(valid_trade_info ? info.input_final_value : amount)
@@ -149,6 +151,8 @@ FloatingBackground {
     }
 
     function onInputChanged() {
+        if(!form_currently_visible) return
+
         if(capVolume()) updateTradeInfo()
 
         // Recalculate total amount
@@ -300,14 +304,12 @@ FloatingBackground {
                 enabled: input_volume.field.enabled && !buyWithNoPrice() && to > 0
                 property bool updating_from_text_field: false
                 property bool updating_text_field: false
-                readonly property int precision: General.getRecommendedPrecision(to)
                 Layout.fillWidth: true
                 Layout.leftMargin: top_line.Layout.leftMargin
                 Layout.rightMargin: top_line.Layout.rightMargin
                 Layout.bottomMargin: top_line.Layout.rightMargin*0.5
                 from: 0
                 to: Math.max(0, parseFloat(getVolumeCap()))
-                stepSize: 1/Math.pow(10, precision)
                 live: false
 
                 onValueChanged: {
@@ -325,7 +327,7 @@ FloatingBackground {
                     anchors.horizontalCenter: parent.handle.horizontalCenter
                     anchors.bottom: parent.handle.top
 
-                    text_value: General.formatDouble(input_volume_slider.getRealValue(), input_volume_slider.precision)
+                    text_value: General.formatDouble(input_volume_slider.getRealValue(), General.getRecommendedPrecision(input_volume_slider.to))
                     font.pixelSize: input_volume.field.font.pixelSize
                 }
 

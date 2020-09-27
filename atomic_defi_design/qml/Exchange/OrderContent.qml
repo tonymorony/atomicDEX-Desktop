@@ -1,6 +1,6 @@
-import QtQuick 2.14
-import QtQuick.Layouts 1.12
-import QtQuick.Controls 2.12
+import QtQuick 2.15
+import QtQuick.Layouts 1.15
+import QtQuick.Controls 2.15
 
 import QtGraphicalEffects 1.0
 import "../Components"
@@ -41,6 +41,7 @@ Item {
         text_value: API.app.settings_pg.empty_string + (!details ? "" :
                                                          "~ " + General.formatCrypto("", details.base_amount, details.base_coin))
         font.pixelSize: in_modal ? Style.textSize2 : Style.textSize
+        color: Style.getCoinColor(!details ? "white" : details.base_coin)
 
         anchors.horizontalCenter: base_icon.horizontalCenter
         anchors.top: base_icon.bottom
@@ -49,12 +50,13 @@ Item {
     }
 
     // Swap icon
-    DefaultImage {
-        source: General.image_path + "exchange-exchange.svg"
-        width: base_amount.font.pixelSize
-        height: width
+    SwapIcon {
         anchors.verticalCenter: base_icon.bottom
         anchors.horizontalCenter: parent.horizontalCenter
+        top_arrow_ticker: !details ? "KMD" :
+                                     details.base_coin
+        bottom_arrow_ticker: !details ? "KMD" :
+                                        details.rel_coin
     }
 
     // Rel Amount
@@ -63,6 +65,7 @@ Item {
         text_value: API.app.settings_pg.empty_string + (!details ? "" :
                                                          "~ " + General.formatCrypto("", details.rel_amount, details.rel_coin))
         font.pixelSize: base_amount.font.pixelSize
+        color: Style.getCoinColor(!details ? "white" : details.rel_coin)
 
         anchors.horizontalCenter: rel_icon.horizontalCenter
         anchors.top: base_amount.top

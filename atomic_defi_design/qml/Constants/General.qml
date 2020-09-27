@@ -1,5 +1,5 @@
 pragma Singleton
-import QtQuick 2.14
+import QtQuick 2.15
 
 QtObject {
     readonly property int width: 1280
@@ -7,10 +7,11 @@ QtObject {
     readonly property int minimumWidth: 1280
     readonly property int minimumHeight: 800
 
+    readonly property string os_file_prefix: Qt.platform.os == "windows" ? "file:///" : "file://"
     readonly property string assets_path: Qt.resolvedUrl(".") + "../../assets/"
     readonly property string image_path: assets_path + "images/"
     readonly property string coin_icons_path: image_path + "coins/"
-    readonly property string custom_coin_icons_path: "file://" + API.app.settings_pg.get_custom_coins_icons_path() + "/"
+    readonly property string custom_coin_icons_path: os_file_prefix + API.app.settings_pg.get_custom_coins_icons_path() + "/"
     function coinIcon(ticker) {
         if(ticker === "") return ""
 
@@ -235,6 +236,12 @@ QtObject {
     function fullNamesOfCoins(coins) {
         return coins.map(c => {
          return { value: c.ticker, text: fullCoinName(c.name, c.ticker) }
+        })
+    }
+
+    function tickersOfCoins(coins) {
+        return coins.map(c => {
+            return { value: c.ticker, text: c.ticker }
         })
     }
 

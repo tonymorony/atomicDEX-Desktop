@@ -1,6 +1,6 @@
-import QtQuick 2.14
-import QtQuick.Layouts 1.12
-import QtQuick.Controls 2.12
+import QtQuick 2.15
+import QtQuick.Layouts 1.15
+import QtQuick.Controls 2.15
 
 import "../../Components"
 import "../../Constants"
@@ -195,8 +195,6 @@ Item {
     }
 
     function setPair(is_left_side, changed_ticker) {
-        swap_cooldown.restart()
-
         let base = left_ticker
         let rel = right_ticker
 
@@ -204,18 +202,24 @@ Item {
         // Set the new one if it's a change
         if(changed_ticker) {
             if(is_left_side) {
+                if(base === changed_ticker) return
+
                 // Check if it's a swap
                 if(base !== changed_ticker && rel === changed_ticker)
                     is_swap = true
                 else base = changed_ticker
             }
             else {
+                if(rel === changed_ticker) return
+
                 // Check if it's a swap
                 if(rel !== changed_ticker && base === changed_ticker)
                     is_swap = true
                 else rel = changed_ticker
             }
         }
+
+        swap_cooldown.restart()
 
         if(is_swap) {
             console.log("Swapping current pair, it was: ", base, rel)
@@ -271,7 +275,7 @@ Item {
         const price_numer = preffered_order.price_numer
         const price = getCurrentPrice()
         const volume = current_form.field.text
-        console.log("QML place order: max balance:", current_form.getMaxVolume())
+        console.log("QML place order: max_taker_volume:", current_form.getMaxVolume())
         console.log("QML place order: params:", base, " <-> ", rel, "  /  price:", price, "  /  volume:", volume, "  /  is_created_order:", is_created_order, "  /  price_denom:", price_denom, "  /  price_numer:", price_numer,
                     "  /  nota:", nota, "  /  confs:", confs)
         console.log("QML place order: trade info:", JSON.stringify(curr_trade_info))
@@ -363,31 +367,14 @@ Item {
                     }
 
                     // Swap button
-                    Item {
+                    SwapIcon {
                         Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                         Layout.preferredWidth: right_arrow.width
                         Layout.preferredHeight: selector_left.height * 0.9
 
-                        DefaultText {
-                            id: right_arrow
-                            anchors.right: parent.right
-                            anchors.top: parent.top
-                            anchors.topMargin: -font.pixelSize/4
-                            text_value: "→"
-                            font.family: "Impact"
-                            font.pixelSize: 30
-                            font.bold: true
-                            color: Qt.lighter(Style.getCoinColor(selector_left.ticker), swap_button.containsMouse ? Style.hoverLightMultiplier : 1.0)
-                        }
-                        DefaultText {
-                            anchors.left: parent.left
-                            anchors.bottom: parent.bottom
-                            text_value: "←"
-                            font.family: right_arrow.font.family
-                            font.pixelSize: right_arrow.font.pixelSize
-                            font.bold: right_arrow.font.bold
-                            color: Qt.lighter(Style.getCoinColor(selector_right.ticker), swap_button.containsMouse ? Style.hoverLightMultiplier : 1.0)
-                        }
+                        top_arrow_ticker: selector_left.ticker
+                        bottom_arrow_ticker: selector_right.ticker
+                        hovered: swap_button.containsMouse
 
                         DefaultMouseArea {
                             id: swap_button

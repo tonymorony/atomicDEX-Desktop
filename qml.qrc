@@ -133,11 +133,12 @@
         <file>atomic_defi_design/qml/Exchange/Trade/CandleStickChart.qml</file>
         <file>atomic_defi_design/qml/Exchange/Trade/TickerSelector.qml</file>
         <file>atomic_defi_design/qml/Exchange/Orders/Orders.qml</file>
-        <file>atomic_defi_design/qml/Exchange/Orders/OrderList.qml</file>
+        <file>atomic_defi_design/qml/Exchange/OrderList.qml</file>
         <file>atomic_defi_design/qml/Exchange/History/History.qml</file>
-        <file>atomic_defi_design/qml/Exchange/History/SwapList.qml</file>
         <file>atomic_defi_design/qml/Exchange/Exchange.qml</file>
         <file>atomic_defi_design/qml/Exchange/ExchangeTab.qml</file>
+        <file>atomic_defi_design/qml/Exchange/OrdersPage.qml</file>
+        <file>atomic_defi_design/qml/Exchange/OrderList.qml</file>
         <file>atomic_defi_design/qml/Exchange/OrderLine.qml</file>
         <file>atomic_defi_design/qml/Exchange/SwapProgress.qml</file>
         <file>atomic_defi_design/qml/Exchange/OrderModal.qml</file>
@@ -156,6 +157,7 @@
         <file>atomic_defi_design/qml/Components/ColumnHeader.qml</file>
         <file>atomic_defi_design/qml/Components/RightClickMenu.qml</file>
         <file>atomic_defi_design/qml/Components/PlusButton.qml</file>
+        <file>atomic_defi_design/qml/Components/SwapIcon.qml</file>
         <file>atomic_defi_design/qml/Components/AddressField.qml</file>
         <file>atomic_defi_design/qml/Components/AddressFieldWithTitle.qml</file>
         <file>atomic_defi_design/qml/Components/AmountField.qml</file>
