@@ -260,7 +260,7 @@ jobs:
           cd ..
 
           # get SDKs 
-          git clone https://github.com/phracker/MacOSX-SDKs $HOME/sdk
+          git clone https://github.com/KomodoPlatform/MacOSX-SDKs $HOME/sdk
 
       - name: vcpkg deps (MacOS)
         env: # Or as an environment variable
