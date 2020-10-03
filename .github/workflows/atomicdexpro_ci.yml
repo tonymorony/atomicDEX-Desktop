@@ -336,12 +336,12 @@ jobs:
         run: |
           Set-ExecutionPolicy RemoteSigned -scope CurrentUser
           Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
-          scoop install nim --global
           scoop install llvm --global
           scoop install ninja --global
           scoop install cmake --global
           scoop install git --global
           scoop install 7zip  --global
+          scoop install nim --global
 
           scoop cache rm 7zip
           scoop cache rm git
