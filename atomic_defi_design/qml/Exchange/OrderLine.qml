@@ -8,6 +8,7 @@ import "../Constants"
 
 AnimatedRectangle {
     property var details
+    property alias clickable: mouse_area.enabled
     readonly property bool is_placed_order: !details ? false :
                                                        details.order_id !== ''
 
@@ -15,6 +16,7 @@ AnimatedRectangle {
     height: 40
 
     color: Style.colorOnlyIf(mouse_area.containsMouse, Style.colorTheme8)
+
 
     // Swap icon
     SwapIcon {
@@ -41,8 +43,8 @@ AnimatedRectangle {
             Layout.alignment: Qt.AlignVCenter
             font.pixelSize: base_amount.font.pixelSize
             color: !details ? "white" : getStatusColor(details.order_status)
-            text_value: API.app.settings_pg.empty_string + (!details ? "" :
-                                                             visible ? getStatusTextWithPrefix(details.order_status, true) : '')
+            text_value: !details ? "" :
+                        visible ? getStatusStep(details.order_status) : ''
         }
 
         DefaultBusyIndicator {
@@ -58,7 +60,7 @@ AnimatedRectangle {
     DefaultMouseArea {
         id: mouse_area
         anchors.fill: parent
-        hoverEnabled: true
+        hoverEnabled: enabled
         onClicked: {
             order_modal.details = details
             order_modal.open()
@@ -80,10 +82,9 @@ AnimatedRectangle {
     // Base Amount
     DefaultText {
         id: base_amount
-        text_value: API.app.settings_pg.empty_string + (!details ? "" :
-                                                         General.formatCrypto("", details.base_amount, details.base_coin))
+        text_value: !details ? "" :
+                    General.formatCrypto("", details.base_amount, details.base_coin)
         font.pixelSize: Style.textSizeSmall4
-        color: Style.getCoinColor(!details ? "white" : details.base_coin)
 
         anchors.left: base_icon.right
         anchors.leftMargin: 10
@@ -94,10 +95,9 @@ AnimatedRectangle {
     // Rel Amount
     DefaultText {
         id: rel_amount
-        text_value: API.app.settings_pg.empty_string + (!details ? "" :
-                                                         General.formatCrypto("", details.rel_amount, details.rel_coin))
+        text_value: !details ? "" :
+                    General.formatCrypto("", details.rel_amount, details.rel_coin)
         font.pixelSize: base_amount.font.pixelSize
-        color: Style.getCoinColor(!details ? "white" : details.rel_coin)
 
         anchors.right: rel_icon.left
         anchors.rightMargin: base_amount.anchors.leftMargin
@@ -117,21 +117,44 @@ AnimatedRectangle {
         anchors.verticalCenter: parent.verticalCenter
     }
 
+
+    DefaultText {
+        id: cancel_button_text
+        visible: !details ? false :
+                 details.cancellable
+
+        font.pixelSize: Style.textSizeSmall4
+        text_value: "x"
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset: -font.pixelSize * 0.125
+        anchors.left: parent.left
+        anchors.leftMargin: 20
+
+        color: cancel_button.containsMouse ? Style.colorText : Style.colorText2
+
+        DefaultMouseArea {
+            id: cancel_button
+            anchors.fill: parent
+            hoverEnabled: true
+            onClicked: { if(details) cancelOrder(details.order_id) }
+        }
+    }
+
     // Date
     DefaultText {
         font.pixelSize: base_amount.font.pixelSize
-        text_value: API.app.settings_pg.empty_string + (!details ? "" :
-                                                        details.date)
+        text_value: !details ? "" :
+                    details.date
         anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
+        anchors.left: cancel_button_text.left
         anchors.leftMargin: 20
     }
 
     // Order ID
     DefaultText {
         font.pixelSize: base_amount.font.pixelSize
-        text_value: API.app.settings_pg.empty_string + (!details ? "" :
-                                                        details.order_id.substring(0, 18) + "...")
+        text_value: !details || details.order_id === "" ? "" :
+                    details.order_id.substring(0, 5) + "..." + details.order_id.substring(details.order_id.length-5)
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
         anchors.rightMargin: 20
@@ -139,7 +162,7 @@ AnimatedRectangle {
     }
 
     HorizontalLine {
-        visible: index !== items.length -1
+        visible: !items ? true : index !== items.length -1
         width: parent.width
         color: Style.colorWhite9
         anchors.bottom: parent.bottom

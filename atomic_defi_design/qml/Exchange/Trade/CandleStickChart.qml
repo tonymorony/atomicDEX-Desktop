@@ -111,7 +111,7 @@ Item {
                 titleVisible: false
                 lineVisible: true
                 labelsFont.family: Style.font_family
-                labelsFont.weight: Font.Bold
+                labelsFont.weight: Font.Medium
                 gridLineColor: Style.colorChartGrid
                 labelsColor: Style.colorChartText
                 color: Style.colorChartLegendLine
@@ -242,7 +242,7 @@ Item {
                 titleVisible: false
                 lineVisible: true
                 labelsFont.family: Style.font_family
-                labelsFont.weight: Font.Bold
+                labelsFont.weight: Font.Medium
                 gridLineColor: Style.colorChartGrid
                 labelsColor: Style.colorChartText
                 color: Style.colorChartLegendLine
@@ -639,7 +639,7 @@ Item {
 
     DefaultText {
         visible: !pair_supported
-        text_value: API.app.settings_pg.empty_string + (qsTr("There is no chart data for this pair yet"))
+        text_value: qsTr("There is no chart data for this pair yet")
         anchors.centerIn: parent
     }
 }

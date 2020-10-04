@@ -15,6 +15,8 @@ RowLayout {
     property color color: !details ? "white" : Style.getCoinColor(details.ticker)
     Behavior on color { ColorAnimation { duration: Style.animationDuration } }
 
+    property alias bottom_text: bottom_line.text_value
+
     DefaultImage {
         id: icon
         source: General.coinIcon(ticker)
@@ -31,15 +33,16 @@ RowLayout {
             anchors.verticalCenter: parent.verticalCenter
 
             DefaultText {
-                text_value: API.app.settings_pg.empty_string + (!details ? "" :
-                                `<font color="${root.color}"><b>${details.ticker}</b></font>&nbsp;&nbsp;&nbsp;<font color="${Style.colorText}">${details.name}</font>`)
+                text_value: !details ? "" :
+                            `<font color="${root.color}"><b>${details.ticker}</b></font>&nbsp;&nbsp;&nbsp;<font color="${Style.colorText}">${details.name}</font>`
                 color: Style.colorText
                 font.pixelSize: Style.textSizeSmall3
             }
 
             DefaultText {
-                text_value: API.app.settings_pg.empty_string + (!details ? "" :
-                                details.balance + "  (" + General.formatFiat("", details.main_currency_balance, API.app.settings_pg.current_currency) + ")")
+                id: bottom_line
+                text_value: !details ? "" :
+                            details.balance + "  (" + General.formatFiat("", details.main_currency_balance, API.app.settings_pg.current_currency) + ")"
                 color: Style.colorText2
                 font.pixelSize: Style.textSizeSmall2
             }

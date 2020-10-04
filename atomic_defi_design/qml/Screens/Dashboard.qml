@@ -35,6 +35,8 @@ Item {
     property int prev_page: -1
     property int current_page: getMainPage()
 
+    readonly property bool is_dex_banned: true
+
     function reset() {
         // Fill all coins list
         General.all_coins = API.app.get_all_coins()
@@ -56,7 +58,8 @@ Item {
         return app.current_page === idx_dashboard
     }
 
-    property var portfolio_coins: API.app.portfolio_pg.portfolio_mdl.portfolio_proxy_mdl
+    readonly property var portfolio_mdl: API.app.portfolio_pg.portfolio_mdl
+    property var portfolio_coins: portfolio_mdl.portfolio_proxy_mdl
 
     function resetCoinFilter() {
         portfolio_coins.setFilterFixedString("")
@@ -140,7 +143,7 @@ Item {
                 Layout.fillHeight: true
                 DefaultText {
                     anchors.centerIn: parent
-                    text_value: API.app.settings_pg.empty_string + (qsTr("Content for this section will be added later. Stay tuned!"))
+                    text_value: qsTr("Content for this section will be added later. Stay tuned!")
                 }
             }
 
@@ -151,7 +154,7 @@ Item {
                 Layout.fillHeight: true
                 DefaultText {
                     anchors.centerIn: parent
-                    text_value: API.app.settings_pg.empty_string + (qsTr("Content for this section will be added later. Stay tuned!"))
+                    text_value: qsTr("Content for this section will be added later. Stay tuned!")
                 }
             }
 
@@ -188,7 +191,7 @@ Item {
             anchors.centerIn: parent
             text_value: notifications_modal.notifications_list.length
             font.pixelSize: Style.textSizeSmall1
-            font.bold: true
+            font.weight: Font.Medium
             color: notifications_modal.notifications_list.length > 0 ? Style.colorWhite9 : Style.colorWhite12
         }
     }

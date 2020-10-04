@@ -18,7 +18,7 @@ DefaultComboBox {
         id: line
         padding: 10
 
-        Component.onCompleted: API.app.portfolio_pg.portfolio_mdl.portfolioItemDataChanged.connect(forceUpdateDetails)
+        Component.onCompleted: portfolio_mdl.portfolioItemDataChanged.connect(forceUpdateDetails)
 
         function forceUpdateDetails() {
             console.log("Portfolio item data changed, force-updating the selected ticker details!")
@@ -92,7 +92,7 @@ DefaultComboBox {
                     function onClosed() { input_coin_filter.reset() }
                 }
 
-                placeholderText: API.app.settings_pg.empty_string + (qsTr("Search"))
+                placeholderText: qsTr("Search")
                 selectByMouse: true
 
                 onTextChanged: {

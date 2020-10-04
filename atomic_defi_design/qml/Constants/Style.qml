@@ -15,12 +15,16 @@ QtObject {
 
     onDark_themeChanged: setQaterialStyle()
 
-    readonly property FontLoader mySystemFontThin: FontLoader { source: "../../assets/fonts/Montserrat-Thin.ttf" }
-    readonly property FontLoader mySystemFontLight: FontLoader { source: "../../assets/fonts/Montserrat-Light.ttf" }
-    readonly property FontLoader mySystemFont: FontLoader { source: "../../assets/fonts/Montserrat-Regular.ttf" }
-    readonly property FontLoader mySystemFontMedium: FontLoader { source: "../../assets/fonts/Montserrat-Medium.ttf" }
-    readonly property FontLoader mySystemFontSemiBold: FontLoader { source: "../../assets/fonts/Montserrat-SemiBold.ttf" }
-    readonly property string font_family: "Montserrat"
+    readonly property FontLoader fontB: FontLoader { source: "../../assets/fonts/Ubuntu-B.ttf" }
+    readonly property FontLoader fontBI: FontLoader { source: "../../assets/fonts/Ubuntu-BI.ttf" }
+    readonly property FontLoader fontL: FontLoader { source: "../../assets/fonts/Ubuntu-L.ttf" }
+    readonly property FontLoader fontLI: FontLoader { source: "../../assets/fonts/Ubuntu-LI.ttf" }
+    readonly property FontLoader fontM: FontLoader { source: "../../assets/fonts/Ubuntu-M.ttf" }
+    readonly property FontLoader fontMI: FontLoader { source: "../../assets/fonts/Ubuntu-MI.ttf" }
+    readonly property FontLoader fontR: FontLoader { source: "../../assets/fonts/Ubuntu-R.ttf" }
+    readonly property FontLoader fontRI: FontLoader { source: "../../assets/fonts/Ubuntu-R.ttf" }
+    readonly property FontLoader fontTh: FontLoader { source: "../../assets/fonts/Ubuntu-Th.ttf" }
+    readonly property string font_family: "Ubuntu"
 
     readonly property string listItemPrefix:  " ⚬   "
     readonly property string successCharacter:  "✓"
@@ -234,11 +238,12 @@ QtObject {
     readonly property var colorCoin: ({
                                           "BCH": "#8DC351",
                                           "BTC": "#F7931A",
-                                          "FTC": "#27323A",
+                                          "FTC": "#FFFFFF",
+                                          "GLEEC": "#8C41FF",
                                           "DOGE": "#C3A634",
                                           "ETH": "#627EEA",
                                           "KMD": "#2B6680",
-                                          "MORTY": "#684B31",
+                                          "MORTY": "#A4764D",
                                           "RICK": "#A5CBDD",
                                           "EMC2": "#00CCFF",
                                           "DASH": "#008CE7",
@@ -247,7 +252,7 @@ QtObject {
                                           "XZC": "#23B852",
                                           "LTC": "#BFBBBB",
                                           "ZEC": "#ECB244",
-                                          "ZER": "#15182A",
+                                          "ZER": "#FFFFFF",
                                           "NAV": "#7D59B5",
                                           "ECA": "#A915DC",
                                           "QTUM": "#2E9AD0",
@@ -259,6 +264,7 @@ QtObject {
                                           "CRYPTO": "#F58736",
                                           "LABS": "#C1F6E1",
                                           "MGW": "#854F2F",
+                                          "MONA": "#DEC799",
                                           "RFOX": "#D83331",
                                           "BOTS": "#F69B57",
                                           "MCL": "#EA0000",
@@ -266,7 +272,7 @@ QtObject {
                                           "BET": "#F69B57",
                                           "SUPERNET": "#F69B57",
                                           "OOT": "#25AAE1",
-                                          "HUSH": "#454545",
+                                          "HUSH": "#737373",
                                           "REVS": "#F69B57",
                                           "ILN": "#523170",
                                           "VRSC": "#3164D3",

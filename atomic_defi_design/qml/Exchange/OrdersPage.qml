@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
+import QtQuick.Dialogs 1.3
 
 import Qaterial 1.0 as Qaterial
 
@@ -11,8 +12,8 @@ import ".."
 Item {
     id: root
 
-    readonly property date default_min_date: new Date(new Date().setFullYear(new Date().getFullYear() - 1))
-    readonly property date default_max_date: new Date(new Date().setFullYear(new Date().getFullYear() + 1))
+    readonly property date default_min_date: new Date("2019-01-01")
+    readonly property date default_max_date: new Date(new Date().setDate(new Date().getDate() + 1))
 
     property var list_model: API.app.orders_mdl
     property var list_model_proxy: API.app.orders_mdl.orders_proxy_mdl
@@ -21,6 +22,7 @@ Item {
     property alias title: order_list.title
     property alias empty_text: order_list.empty_text
     property alias items: order_list.items
+    property alias filter_enabled: enable_filters.checked
 
     property bool is_history: false
 
@@ -32,12 +34,12 @@ Item {
     }
 
     function applyDateFilter() {
-        list_model_proxy.filter_minimum_date = show_all_coins.checked ? default_min_date : min_date.date
-        list_model_proxy.filter_maximum_date = show_all_coins.checked ? default_max_date : max_date.date
+        list_model_proxy.filter_minimum_date = filter_enabled ? min_date.date : default_min_date
+        list_model_proxy.filter_maximum_date = filter_enabled ? max_date.date : default_max_date
     }
 
     function applyTickerFilter() {
-        list_model_proxy.set_coin_filter(show_all_coins.checked ? "" : combo_base.currentValue + "/" + combo_rel.currentValue)
+        list_model_proxy.set_coin_filter(filter_enabled ? combo_base.currentValue + "/" + combo_rel.currentValue : "")
     }
 
     function applyFilter() {
@@ -75,11 +77,11 @@ Item {
                 anchors.centerIn: parent
 
                 DefaultSwitch {
-                    id: show_all_coins
+                    id: enable_filters
                     Layout.leftMargin: 15
-                    text: API.app.settings_pg.empty_string + (qsTr("Disable Filters"))
+                    text: qsTr("Enable Filters")
 
-                    checked: true
+                    checked: false
                     onCheckedChanged: applyFilter()
                 }
 
@@ -93,7 +95,7 @@ Item {
 
                 DefaultComboBox {
                     id: combo_base
-                    enabled: !show_all_coins.checked
+                    enabled: filter_enabled
                     Layout.preferredWidth: 120
                     Layout.topMargin: 10
                     Layout.bottomMargin: Layout.topMargin
@@ -129,7 +131,7 @@ Item {
 
                 DefaultComboBox {
                     id: combo_rel
-                    enabled: !show_all_coins.checked
+                    enabled: filter_enabled
                     Layout.preferredWidth: 120
                     Layout.topMargin: combo_base.Layout.topMargin
                     Layout.bottomMargin: combo_base.Layout.bottomMargin
@@ -149,34 +151,10 @@ Item {
                     Layout.preferredHeight: Layout.preferredWidth
                 }
 
-                // Cancel button
-                DangerButton {
-                    visible: !root.is_history
-                    text: API.app.settings_pg.empty_string + (show_all_coins.checked ? qsTr("Cancel All Orders") : qsTr("Cancel Filtered Orders"))
-                    enabled: list_model.length > 0
-                    onClicked: {
-                        if(show_all_coins.checked) API.app.trading_pg.cancel_all_orders()
-                        else API.app.trading_pg.cancel_order(list_model_proxy.get_filtered_ids())
-                    }
-                    Layout.rightMargin: 15
-                }
-
-                // Export button
-                PrimaryButton {
-                    visible: root.is_history
-                    text: API.app.settings_pg.empty_string + (qsTr("Export CSV"))
-                    enabled: list_model.length > 0
-                    onClicked: {
-                        // TODO: Export CSV
-                        API.app.orders_mdl.orders_proxy_mdl.export_csv_visible_history("swap_history")
-                    }
-                    Layout.rightMargin: 15
-                }
-
                 Qaterial.TextFieldDatePicker {
                     id: min_date
-                    enabled: !show_all_coins.checked
-                    title: API.app.settings_pg.empty_string + (qsTr("From"))
+                    enabled: filter_enabled
+                    title: qsTr("From")
                     from: default_min_date
                     to: default_max_date
                     date: default_min_date
@@ -186,11 +164,54 @@ Item {
                 Qaterial.TextFieldDatePicker {
                     id: max_date
                     enabled: min_date.enabled
-                    title: API.app.settings_pg.empty_string + (qsTr("To"))
+                    title: qsTr("To")
                     from: default_min_date
                     to: default_max_date
                     date: default_max_date
                     onAccepted: applyDateFilter()
+                }
+
+                // Cancel button
+                DangerButton {
+                    visible: !root.is_history
+                    text: filter_enabled ? qsTr("Cancel Filtered Orders") : qsTr("Cancel All Orders")
+                    enabled: list_model.length > 0
+                    onClicked: {
+                        if(filter_enabled) API.app.trading_pg.cancel_order(list_model_proxy.get_filtered_ids())
+                        else API.app.trading_pg.cancel_all_orders()
+                    }
+                }
+
+                // Export button
+                PrimaryButton {
+                    visible: root.is_history
+                    text: qsTr("Export CSV")
+                    enabled: list_model.length > 0
+                    onClicked: {
+                        export_csv_dialog.folder = General.os_file_prefix + API.app.get_export_folder()
+                        export_csv_dialog.open()
+                    }
+                }
+
+                FileDialog {
+                    id: export_csv_dialog
+
+                    title: qsTr("Please choose the CSV export name and location")
+                    selectMultiple: false
+                    selectExisting: false
+                    selectFolder: false
+
+                    defaultSuffix: "csv"
+
+                    onAccepted: {
+                        const path = fileUrl.toString()
+                        console.log("Exporting to CSV: " + path)
+                        API.app.orders_mdl.orders_proxy_mdl.export_csv_visible_history(path.replace(General.os_file_prefix, ""))
+                        Qt.openUrlExternally(General.os_file_prefix + API.app.get_export_folder())
+                    }
+                    onRejected: {
+                        console.log("CSV export cancelled")
+                    }
                 }
             }
         }
@@ -216,7 +237,7 @@ Item {
     LogModal {
         id: recover_funds_modal
 
-        header: API.app.settings_pg.empty_string + (qsTr("Recover Funds Result"))
+        header: qsTr("Recover Funds Result")
         field.text: General.prettifyJSON(recover_funds_result)
 
         onClosed: recover_funds_result = "{}"

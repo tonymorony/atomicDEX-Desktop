@@ -556,7 +556,7 @@ namespace atomic_dex
         //! Get the trading fee -> 1 / (777 * amount);
         t_float_50 trade_fee_f = get_mm2().get_trade_fee(ticker.toStdString(), amount.toStdString(), false);
 
-        //! Get the fixed fee (from mm2)
+        //! Get the transaction fees (from mm2)
         auto       answer      = get_mm2().get_trade_fixed_fee(ticker.toStdString());
 
         //! Is fixed fee are available
@@ -607,11 +607,13 @@ namespace atomic_dex
     }
 
     void
-    application::set_qt_app(std::shared_ptr<QApplication> app) noexcept
+    application::set_qt_app(std::shared_ptr<QApplication> app, QQmlApplicationEngine* engine) noexcept
     {
         this->m_app = app;
         connect(m_app.get(), SIGNAL(aboutToQuit()), this, SLOT(exit_handler()));
-        system_manager_.get_system<settings_page>().init_lang();
+        auto& settings_system = system_manager_.get_system<settings_page>();
+        settings_system.set_qml_engine(engine);
+        settings_system.init_lang();
     }
 
     QString
