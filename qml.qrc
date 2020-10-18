@@ -6,6 +6,7 @@
         <file>atomic_defi_design/assets/languages/atomic_defi_en.qm</file>
         <file>atomic_defi_design/assets/languages/atomic_defi_tr.qm</file>
         <file>atomic_defi_design/assets/languages/atomic_defi_fr.qm</file>
+        <file>atomic_defi_design/assets/languages/atomic_defi_ru.qm</file>
         <file>atomic_defi_design/assets/fonts/Ubuntu-B.ttf</file>
         <file>atomic_defi_design/assets/fonts/Ubuntu-BI.ttf</file>
         <file>atomic_defi_design/assets/fonts/Ubuntu-L.ttf</file>
@@ -94,7 +95,6 @@
         <file>atomic_defi_design/assets/images/coins/pax.png</file>
         <file>atomic_defi_design/assets/images/coins/revs.png</file>
         <file>atomic_defi_design/assets/images/coins/rfox.png</file>
-        <file>atomic_defi_design/assets/images/coins/hush.png</file>
         <file>atomic_defi_design/assets/images/coins/qtum.png</file>
         <file>atomic_defi_design/assets/images/coins/qrc20.png</file>
         <file>atomic_defi_design/assets/images/coins/rvn.png</file>
@@ -115,6 +115,7 @@
         <file>atomic_defi_design/assets/images/lang/en.png</file>
         <file>atomic_defi_design/assets/images/lang/fr.png</file>
         <file>atomic_defi_design/assets/images/lang/tr.png</file>
+        <file>atomic_defi_design/assets/images/lang/ru.png</file>
         <file>atomic_defi_design/qml/App.qml</file>
         <file>qtquickcontrols2.conf</file>
         <file>atomic_defi_design/qml/Screens/FirstLaunch.qml</file>
@@ -201,6 +202,8 @@
         <file>atomic_defi_design/qml/Components/DefaultCheckBox.qml</file>
         <file>atomic_defi_design/qml/Components/GradientRectangle.qml</file>
         <file>atomic_defi_design/qml/Components/LogModal.qml</file>
+        <file>atomic_defi_design/qml/Components/LinkIcon.qml</file>
+        <file>atomic_defi_design/qml/Components/LinksRow.qml</file>
         <file>atomic_defi_design/qml/Components/UpdateModal.qml</file>
         <file>atomic_defi_design/qml/Components/UpdateNotificationLine.qml</file>
         <file>atomic_defi_design/qml/Components/DefaultModal.qml</file>
@@ -213,6 +216,7 @@
         <file>atomic_defi_design/qml/Components/VerticalLine.qml</file>
         <file>atomic_defi_design/qml/Components/VerticalLineBasic.qml</file>
         <file>atomic_defi_design/qml/Components/ComboBoxWithTitle.qml</file>
+        <file>atomic_defi_design/qml/Components/TitleText.qml</file>
         <file>atomic_defi_design/qml/Components/TextWithTitle.qml</file>
         <file>atomic_defi_design/qml/Components/TextFieldWithTitle.qml</file>
         <file>atomic_defi_design/qml/Components/TextAreaWithTitle.qml</file>
@@ -244,6 +248,5 @@
         <file>atomic_defi_design/qml/Settings/Languages.qml</file>
         <file>atomic_defi_design/qml/Support/Support.qml</file>
         <file>atomic_defi_design/qml/Support/FAQLine.qml</file>
-        <file>atomic_defi_design/qml/Support/LinkIcon.qml</file>
     </qresource>
 </RCC>

@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.5)
 project(atomicdex-desktop LANGUAGES CXX VERSION 0.3.0)
 
 
+option(DISABLE_GEOBLOCKING "Enable to disable geoblocking (for dev purpose)" OFF)
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -13,19 +15,17 @@ if (EXISTS ${CMAKE_BINARY_DIR}/conan_paths.cmake)
     set(CONAN_ENABLED ON)
     message(STATUS "Conan package manager enabled")
     include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
-    #include(${CMAKE_SOURCE_DIR}/build/conanbuildinfo.cmake)
-    #conan_basic_setup()
-    #    include(${CMAKE_BINARY_DIR}/conanbuildinfo_multi.cmake)
 else ()
     message(STATUS "VCPKG package manager enabled")
 endif ()
 
+##! Antara
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 include(antara)
 ##! Calling this macros provided by the sdk will if you are on Apple init the environment for this OS (std::filesystem).
 init_antara_env()
 
-##! Antara
+
 ##! We include the module from CMake for fetching dependencies
 include(FetchContent)
 
@@ -34,11 +34,12 @@ if (${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 endif ()
 
 if (UNIX AND NOT APPLE)
+    message("Forcing stdlib C++")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++abi")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 endif ()
 
-##! We fetch our dependence
+##! We fetch our dependencies
 if (APPLE)
     FetchContent_Declare(mm2
             URL https://github.com/KomodoPlatform/atomicDEX-API/releases/download/beta-2.0.2422/mm2-31d1803b0-Darwin-Release.zip)
@@ -69,60 +70,36 @@ else ()
     configure_file(${mm2_SOURCE_DIR}/vcruntime140.dll ${CMAKE_BINARY_DIR}/bin/assets/tools/mm2/vcruntime140.dll COPYONLY)
 endif ()
 
-FetchContent_Declare(libqr_code
-        URL https://github.com/KomodoPlatform/qzxing/archive/master.zip)
-
-FetchContent_GetProperties(libqr_code)
-if (NOT libqr_code_POPULATED)
-    FetchContent_Populate(libqr_code)
-    add_subdirectory(${libqr_code_SOURCE_DIR}/src ${libqr_code_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif ()
-
 add_subdirectory(vendor/antara-gaming_sdk/modules)
-
-##! Get basis assets (default fonts, etc)
-#get_resources_basics_assets(${CMAKE_CURRENT_SOURCE_DIR})
 
 ##! Osx bundle icon
 set(ICON)
 configure_icon_osx(data/osx/atomicdex-desktop.icns ICON atomicdex-desktop.icns)
 ##! End antara
 
-add_library(komodo-sodium INTERFACE)
-if (CONAN_ENABLED)
-    find_package(libsodium REQUIRED)
-else ()
-    find_package(unofficial-sodium CONFIG REQUIRED)
-    target_link_libraries(komodo-sodium INTERFACE unofficial-sodium::sodium)
-endif ()
-add_library(komodo-sodium::sodium ALIAS komodo-sodium)
-add_library(unofficial-bitcoin INTERFACE)
-if (WIN32)
-    target_link_directories(unofficial-bitcoin INTERFACE wally)
-    target_link_libraries(unofficial-bitcoin INTERFACE wally)
-    target_include_directories(unofficial-bitcoin INTERFACE wally)
-else ()
-    find_library(unofficial-secp secp256k1)
-    find_library(unofficial-wally wallycore)
-    find_path(unofficial-wally-headers wally_core.h)
-    target_link_libraries(unofficial-bitcoin INTERFACE ${unofficial-wally} ${unofficial-secp})
-    target_include_directories(unofficial-bitcoin INTERFACE ${unofficial-wally-headers})
-    message(STATUS "Found wally -> ${unofficial-wally} ${unofficial-wally-headers}")
-endif ()
-add_library(unofficial-btc::bitcoin ALIAS unofficial-bitcoin)
-
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
+
+##Lang
+set_directory_properties(PROPERTIES CLEAN_NO_CUSTOM TRUE)
+
 set(TS_FILES
         ${CMAKE_SOURCE_DIR}/atomic_defi_design/assets/languages/atomic_defi_en.ts
         ${CMAKE_SOURCE_DIR}/atomic_defi_design/assets/languages/atomic_defi_fr.ts
-        ${CMAKE_SOURCE_DIR}/atomic_defi_design/assets/languages/atomic_defi_tr.ts)
+        ${CMAKE_SOURCE_DIR}/atomic_defi_design/assets/languages/atomic_defi_tr.ts
+        ${CMAKE_SOURCE_DIR}/atomic_defi_design/assets/languages/atomic_defi_ru.ts)
+
 set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION "${CMAKE_SOURCE_DIR}/atomic_defi_design/assets/languages/")
-qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR}/atomic_defi_design/qml ${TS_FILES})
-#qt5_add_translation(qmFiles ${TS_FILES})
-message(STATUS "${QM_FILES}")
-message(STATUS "${TS_FILES}")
+
+qt5_create_translation(QM_FILES
+        ${PROJECT_SOURCE_DIR}/atomic_defi_design/qml
+        ${TS_FILES}
+        OPTIONS -source-language en_US -no-obsolete)
+
+message(STATUS "QM FILES -> ${QM_FILES}")
+message(STATUS "TS FILES -> ${TS_FILES}")
+##! End Lang
 
 ##! Atomic QT Shared Deps Between main executable and unit tests
 add_library(atomicdex-desktop_shared_deps INTERFACE)
@@ -196,8 +173,9 @@ target_sources(atomicdex-desktop_shared_deps INTERFACE
         ##! QRC
         ${CMAKE_SOURCE_DIR}/qml.qrc
 
-        ##! Linguistic Files
-        ${qmFiles}
+        ##! Linguistic
+        ${QM_FILES}
+        ${TS_FILES}
         )
 
 target_compile_definitions(atomicdex-desktop_shared_deps
@@ -207,6 +185,11 @@ target_compile_definitions(atomicdex-desktop_shared_deps
         $<$<PLATFORM_ID:Windows>:AUTO_DOWNLOAD>
         )
 
+
+if (DISABLE_GEOBLOCKING)
+    message(STATUS "Disabling Geoblocking for dev purpose")
+    target_compile_definitions(atomicdex-desktop_shared_deps INTERFACE -DDISABLE_GEOBLOCKING)
+endif()
 #target_compile_options(atomicdex-desktop_shared_deps INTERFACE -fstandalone-debug)
 
 target_link_libraries(atomicdex-desktop_shared_deps
@@ -322,14 +305,36 @@ if (LINUX)
 endif ()
 
 if (WIN32)
+	add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
     file(COPY assets DESTINATION ${CMAKE_BINARY_DIR}/bin/)
     configure_file(wally/wally.dll ${CMAKE_BINARY_DIR}/bin/ COPYONLY)
     set_target_properties(Folly::folly PROPERTIES INTERFACE_COMPILE_OPTIONS "")
     if (CMAKE_BUILD_TYPE MATCHES Release)
         message(STATUS "disabling console")
         target_compile_definitions(atomicdex-desktop PRIVATE WINDOWS_RELEASE_MAIN)
+		target_compile_options(atomicdex-desktop PRIVATE -Wno-deprecated-declarations)
         target_link_options(atomicdex-desktop PUBLIC --for-linker -subsystem:windows)
     endif ()
+	set(WINDEPLOYQT_PATH "")
+	if (CONAN_ENABLED)
+		set(WINDEPLOYQT_PATH ${CONAN_QT_ROOT}/bin/windeployqt.exe)
+	else()
+		set(WINDEPLOYQT_PATH $ENV{QT_INSTALL_CMAKE_PATH}/bin/windeployqt.exe)
+	endif()
+	
+	if (EXISTS ${WINDEPLOYQT_PATH})
+		message(STATUS "windeployqt path is -> ${WINDEPLOYQT_PATH}")
+	else ()
+		message(FATAL_ERROR "Didn't find windeployqt ${WINDEPLOYQT_PATH}")
+	endif ()
+	#bin --qmldir
+	add_custom_command(TARGET atomicdex-desktop PRE_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                       ${CMAKE_SOURCE_DIR}/ci_tools_atomic_dex/windows_misc $<TARGET_FILE_DIR:atomicdex-desktop>)
+	add_custom_command(TARGET atomicdex-desktop
+        POST_BUILD
+        COMMAND ${WINDEPLOYQT_PATH} ${CMAKE_BINARY_DIR}/bin --qmldir ${CMAKE_SOURCE_DIR}/atomic_defi_design/qml
+        )
 endif ()
 
 if (APPLE)

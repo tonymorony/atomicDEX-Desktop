@@ -292,6 +292,12 @@ namespace atomic_dex
         const QString& base, const QString& rel, const QString& price, const QString& volume, bool is_created_order, const QString& price_denom,
         const QString& price_numer, const QString& rel_nota, const QString& rel_confs)
     {
+        auto max_taker_vol = this->get_orderbook_wrapper()->get_base_max_taker_vol().toJsonObject();
+        // qDebug() << "max_taker_vol: " << max_taker_vol;
+        spdlog::info(
+            "place_sell_order with: base({}), rel ({}), price ({}), volume ({}), is_created_order ({}), price_denom ({}), price_numer ({}), max_taker_vol ({})",
+            base.toStdString(), rel.toStdString(), price.toStdString(), volume.toStdString(), is_created_order, price_numer.toStdString(),
+            price_denom.toStdString(), max_taker_vol.value("decimal").toString().toStdString());
         this->set_buy_sell_rpc_busy(true);
         this->set_buy_sell_last_rpc_data(QJsonObject{{}});
         t_float_50 amount_f;
@@ -352,20 +358,23 @@ namespace atomic_dex
 namespace atomic_dex
 {
     void
-    trading_page::disable_coin(const QString& coin) noexcept
+    trading_page::disable_coins(const QStringList& coins) noexcept
     {
-        auto* market_selector_mdl = get_market_pairs_mdl();
-        if (market_selector_mdl->get_left_selected_coin() == coin)
+        for (auto&& coin: coins)
         {
-            market_selector_mdl->set_left_selected_coin("BTC");
-            market_selector_mdl->set_right_selected_coin("KMD");
+            auto* market_selector_mdl = get_market_pairs_mdl();
+            if (market_selector_mdl->get_left_selected_coin() == coin)
+            {
+                market_selector_mdl->set_left_selected_coin("BTC");
+                market_selector_mdl->set_right_selected_coin("KMD");
+            }
+            else if (market_selector_mdl->get_right_selected_coin() == coin)
+            {
+                market_selector_mdl->set_left_selected_coin("BTC");
+                market_selector_mdl->set_right_selected_coin("KMD");
+            }
+            set_current_orderbook(market_selector_mdl->get_left_selected_coin(), market_selector_mdl->get_right_selected_coin());
         }
-        else if (market_selector_mdl->get_right_selected_coin() == coin)
-        {
-            market_selector_mdl->set_left_selected_coin("BTC");
-            market_selector_mdl->set_right_selected_coin("KMD");
-        }
-        set_current_orderbook(market_selector_mdl->get_left_selected_coin(), market_selector_mdl->get_right_selected_coin());
     }
 
     void

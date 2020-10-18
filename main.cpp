@@ -93,8 +93,8 @@ init_sodium()
 static void
 clean_previous_run()
 {
-    spdlog::info("cleaning previous mm2.service instance");
-    atomic_dex::kill_executable("mm2.service");
+    spdlog::info("cleaning previous mm2 instance");
+    atomic_dex::kill_executable("mm2");
 }
 
 static void
@@ -171,7 +171,7 @@ init_timezone_db()
 
 #if defined(WINDOWS_RELEASE_MAIN)
 INT WINAPI
-WinMain(HINSTANCE hInst, HINSTANCE, LPSTR strCmdLine, INT)
+WinMain([[maybe_unused]] HINSTANCE hInst, HINSTANCE, [[maybe_unused]] LPSTR strCmdLine, INT)
 #else
 
 int

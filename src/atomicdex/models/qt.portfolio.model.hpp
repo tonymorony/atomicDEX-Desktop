@@ -26,7 +26,7 @@
 #include "atomicdex/events/events.hpp"
 #include "atomicdex/services/mm2/mm2.service.hpp"
 #include "qt.portfolio.proxy.filter.model.hpp"
-#include "src/atomicdex/data/wallet/qt.portfolio.data.hpp"
+#include "atomicdex/data/wallet/qt.portfolio.data.hpp"
 
 namespace atomic_dex
 {
