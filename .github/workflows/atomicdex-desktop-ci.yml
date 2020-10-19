@@ -171,6 +171,8 @@ jobs:
       - name: Build AtomicDEX (Windows)
         if: runner.os == 'Windows'
         shell: powershell
+        env:
+          QT_INSTALL_CMAKE_PATH: "C:\Qt\${{ matrix.qt }}\msvc2019_64"
         run: |
           Set-ExecutionPolicy RemoteSigned -scope CurrentUser
           
@@ -194,8 +196,6 @@ jobs:
           scoop cache rm ninja
           scoop cache rm llvm
           scoop cache rm nim
-
-          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\${{ matrix.qt }}\msvc2019_64"
 
           cd ci_tools_atomic_dex
 
