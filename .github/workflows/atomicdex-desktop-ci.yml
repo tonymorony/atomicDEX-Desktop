@@ -254,9 +254,9 @@ jobs:
       - name: Build AtomicDEX (Linux)
         if: runner.os == 'Linux'
         run: |
-          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.15.0/gcc_64/lib/cmake
-          export QT_ROOT=${{ github.workspace }}/Qt/5.15.0
-          export PATH=${{ github.workspace }}/Qt/5.15.0/gcc_64/bin:$PATH
+          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/${{ matrix.qt }}/gcc_64/lib/cmake
+          export QT_ROOT=${{ github.workspace }}/Qt/${{ matrix.qt }}
+          export PATH=${{ github.workspace }}/Qt/${{ matrix.qt }}/gcc_64/bin:$PATH
           export PATH=$HOME/.nimble/bin:$PATH
           export CXXFLAGS=-stdlib=libc++
           export LDFLAGS=-stdlib=libc++
@@ -271,8 +271,8 @@ jobs:
       - name: Build AtomicDEX (MacOS)
         if: runner.os == 'macOS'
         run: |
-          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.15.0/clang_64/lib/cmake
-          export QT_ROOT=${{ github.workspace }}/Qt/5.15.0
+          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/${{ matrix.qt }}/clang_64/lib/cmake
+          export QT_ROOT=${{ github.workspace }}/Qt/${{ matrix.qt }}
           cd ci_tools_atomic_dex
           nimble build -y
           ./ci_tools_atomic_dex bundle release --osx_sdk=$HOME/sdk/MacOSX10.13.sdk --compiler=/usr/local/opt/llvm@9/bin/clang++
@@ -305,7 +305,7 @@ jobs:
           scoop cache rm llvm
           scoop cache rm nim
 
-          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.15.0\msvc2019_64"
+          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\${{ matrix.qt }}\msvc2019_64"
 
           cd ci_tools_atomic_dex
 
@@ -324,9 +324,9 @@ jobs:
         working-directory: ci_tools_atomic_dex
         if: runner.os == 'Linux'
         run: |
-          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.15.0/gcc_64/lib/cmake
-          export QT_ROOT=${{ github.workspace }}/Qt/5.15.0
-          export PATH=${{ github.workspace }}/Qt/5.15.0/gcc_64/bin:$PATH
+          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/${{ matrix.qt }}/gcc_64/lib/cmake
+          export QT_ROOT=${{ github.workspace }}/Qt/${{ matrix.qt }}
+          export PATH=${{ github.workspace }}/Qt/${{ matrix.qt }}/gcc_64/bin:$PATH
           export PATH=$HOME/.nimble/bin:$PATH
           export CXXFLAGS=-stdlib=libc++
           export LDFLAGS=-stdlib=libc++
@@ -347,8 +347,8 @@ jobs:
         working-directory: ci_tools_atomic_dex
         if: runner.os == 'macOS'
         run: |
-          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.15.0/clang_64/lib/cmake
-          export QT_ROOT=${{ github.workspace }}/Qt/5.15.0
+          export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/${{ matrix.qt }}/clang_64/lib/cmake
+          export QT_ROOT=${{ github.workspace }}/Qt/${{ matrix.qt }}
           echo "Running tests"
           ./ci_tools_atomic_dex tests release
           cd build-Release/bin/atomicdex-desktop_tests.app/Contents/MacOS
@@ -366,7 +366,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           echo "Running tests"
-          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.15.0\msvc2019_64"
+          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\${{ matrix.qt }}\msvc2019_64"
           cmd /c '.\ci_tools_atomic_dex.exe tests release 2>&1'
           cd build-Release
           cd bin
