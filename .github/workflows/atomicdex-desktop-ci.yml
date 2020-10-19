@@ -172,7 +172,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: powershell
         env:
-          QT_INSTALL_CMAKE_PATH: "C:\Qt\${{ matrix.qt }}\msvc2019_64"
+          QT_VERSION: ${{ matrix.qt }}
         run: |
           Set-ExecutionPolicy RemoteSigned -scope CurrentUser
           
@@ -189,7 +189,6 @@ jobs:
           scoop install cmake --global
           scoop install git --global
           scoop install 7zip  --global
-
           scoop cache rm 7zip
           scoop cache rm git
           scoop cache rm cmake
@@ -197,6 +196,8 @@ jobs:
           scoop cache rm llvm
           scoop cache rm nim
 
+          $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\$Env:QT_VERSION\msvc2019_64"
+          
           cd ci_tools_atomic_dex
 
           $file = 'src\generate.nim'
