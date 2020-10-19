@@ -120,6 +120,7 @@ jobs:
       - name: Install deps (MacOS)
         if: runner.os == 'macOS'
         run: |
+          ls ${{ github.workspace }}/ci_tools_atomic_dex/ci_scripts
           .${{ github.workspace }}/ci_tools_atomic_dex/ci_scripts/osx_script.sh
 
       - name: vcpkg deps (MacOS)
