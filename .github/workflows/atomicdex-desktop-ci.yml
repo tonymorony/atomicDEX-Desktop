@@ -102,7 +102,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           echo ${{ github.sha }}
-          ./ci_tools_atomic_dex/ci_scripts/linux_script.sh
+          sudo ./ci_tools_atomic_dex/ci_scripts/linux_script.sh
 
       - name: vcpkg deps (Linux)
         if: runner.os == 'Linux'
@@ -120,7 +120,7 @@ jobs:
       - name: Install deps (MacOS)
         if: runner.os == 'macOS'
         run: |
-          ./ci_tools_atomic_dex/ci_scripts/osx_script.sh
+          sudo ./ci_tools_atomic_dex/ci_scripts/osx_script.sh
 
       - name: vcpkg deps (MacOS)
         if: runner.os == 'macOS'
