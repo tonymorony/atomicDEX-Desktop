@@ -102,7 +102,7 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           echo ${{ github.sha }}
-          .${{ github.workspace }}/ci_tools_atomic_dex/ci_scripts/linux_script.sh
+          ./ci_tools_atomic_dex/ci_scripts/linux_script.sh
 
       - name: vcpkg deps (Linux)
         if: runner.os == 'Linux'
@@ -120,8 +120,7 @@ jobs:
       - name: Install deps (MacOS)
         if: runner.os == 'macOS'
         run: |
-          ls ${{ github.workspace }}/ci_tools_atomic_dex/ci_scripts
-          .${{ github.workspace }}/ci_tools_atomic_dex/ci_scripts/osx_script.sh
+          ./ci_tools_atomic_dex/ci_scripts/osx_script.sh
 
       - name: vcpkg deps (MacOS)
         if: runner.os == 'macOS'
@@ -175,7 +174,7 @@ jobs:
         env:
           QT_VERSION: ${{ matrix.qt }}
         run: |
-          .${{ github.workspace }}\ci_tools_atomic_dexci_scripts\windows_script.ps1
+          .\ci_tools_atomic_dexci_scripts\windows_script.ps1
 
       - name: Running Tests (Linux)
         env: # Or as an environment variable
