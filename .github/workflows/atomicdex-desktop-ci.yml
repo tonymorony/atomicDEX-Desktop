@@ -161,16 +161,3 @@ jobs:
           ./configure --disable-shared
           sudo make -j3 install
           cd ..
-
-      - name: prepare build (Linux)
-        if: runner.os == 'Linux'
-        run: |
-         # duplicating because got suspicion that update-alternatives doesnt save between steps
-
-          # set clang version
-          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-10 777
-          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 777
-
-          # set gnu compilers version
-          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 777
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 777
