@@ -102,8 +102,6 @@ jobs:
           DEBIAN_FRONTEND: noninteractive
         run: |
           echo ${{ github.sha }}
-          ls -la ./ci_tools_atomic_dex/
-          ls -la ./ci_tools_atomic_dex/ci_scripts/
           sudo ./ci_tools_atomic_dex/ci_scripts/linux_script.sh
 
       - name: vcpkg deps (Linux)
