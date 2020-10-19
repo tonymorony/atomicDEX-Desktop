@@ -53,7 +53,10 @@ jobs:
     
     steps:
       - uses: actions/checkout@v2
-
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          submodules: 'true'
+      
       - name: Install QT (Linux)
         if: runner.os == 'Linux'
         uses: KomodoPlatform/install-qt-action@v2
