@@ -53,9 +53,6 @@ jobs:
     
     steps:
       - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          submodules: 'true'
 
       - name: Install QT (Linux)
         if: runner.os == 'Linux'
@@ -80,6 +77,7 @@ jobs:
           modules: 'qtcharts qtwidgets debug_info'
 
       - name: Install QT (Windows)
+        if: runner.os == 'Windows'
         uses: KomodoPlatform/install-qt-action@v2
         with:
           version: ${{ matrix.qt }}
@@ -90,9 +88,9 @@ jobs:
           modules: 'qtcharts qtwidgets debug_info'
 
       - name: Install deps (Linux)
+        if: runner.os == 'Linux'
         env:
           DEBIAN_FRONTEND: noninteractive
-        if: runner.os == 'Linux'
         uses: KomodoPlatform/setup-nim-action@v1.0.2
         with:
           nim-version: '1.2.0'
@@ -276,6 +274,7 @@ jobs:
 
       - name: Build AtomicDEX (Windows)
         shell: powershell
+        if: runner.os == 'Windows'
         run: |
           Set-ExecutionPolicy RemoteSigned -scope CurrentUser
           
@@ -340,6 +339,7 @@ jobs:
         env: # Or as an environment variable
           REPORT_CI_TOKEN: ${{ secrets.REPORT_CI_TOKEN_SECRET }}
         working-directory: ci_tools_atomic_dex
+        if: runner.os == 'macOS'
         run: |
           export QT_INSTALL_CMAKE_PATH=${{ github.workspace }}/Qt/5.15.0/clang_64/lib/cmake
           export QT_ROOT=${{ github.workspace }}/Qt/5.15.0
@@ -357,6 +357,7 @@ jobs:
         env: # Or as an environment variable
           REPORT_CI_TOKEN: ${{ secrets.REPORT_CI_TOKEN_SECRET }}
         working-directory: ci_tools_atomic_dex
+        if: runner.os == 'Windows'
         run: |
           echo "Running tests"
           $Env:QT_INSTALL_CMAKE_PATH = "C:\Qt\5.15.0\msvc2019_64"
